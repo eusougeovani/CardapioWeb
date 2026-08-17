@@ -1,0 +1,152 @@
+{
+  "estabelecimento": {
+    "nome": "Torrefação Nômade",
+    "tagline": "Café de especialidade & cozinha autoral",
+    "logo": "assets/logo.svg",
+    "endereco": "Rua dos Pinheiros, 482 — Pinheiros, São Paulo/SP",
+    "horario": "Ter. a Dom. · 08h às 20h",
+    "contato": {
+      "whatsapp": "5511999999999",
+      "whatsappExibicao": "(11) 99999-9999",
+      "telefone": "(11) 3456-7890"
+    },
+    "redesSociais": [
+      { "nome": "Instagram", "url": "https://instagram.com/torrefacaonomade", "icone": "instagram" },
+      { "nome": "Facebook", "url": "https://facebook.com/torrefacaonomade", "icone": "facebook" }
+    ],
+    "formasPagamento": [
+      { "nome": "Pix", "icone": "pix" },
+      { "nome": "Crédito", "icone": "cartao" },
+      { "nome": "Débito", "icone": "cartao" },
+      { "nome": "Dinheiro", "icone": "dinheiro" }
+    ]
+  },
+  "categorias": [
+    {
+      "id": "cafes-especiais",
+      "nome": "Cafés Especiais",
+      "descricao": "Grãos de origem única, torra artesanal semanal",
+      "imagem": "assets/cat-cafes.svg",
+      "produtos": [
+        {
+          "nome": "Espresso Duplo",
+          "descricao": "Blend nômade, notas de caramelo e castanha",
+          "valor": 9.5
+        },
+        {
+          "nome": "Filtrado V60",
+          "descricao": "Café de origem única, extração lenta na hora",
+          "valor": 16.0,
+          "destaque": true
+        },
+        {
+          "nome": "Cappuccino Cremoso",
+          "descricao": "Espresso, leite vaporizado e canela em pó",
+          "valor": 14.0
+        },
+        {
+          "nome": "Flat White",
+          "descricao": "Dose dupla de espresso com microespuma de leite",
+          "valor": 15.5
+        },
+        {
+          "nome": "Café Gelado Nitro",
+          "descricao": "Infusão a frio servida com textura cremosa de nitrogênio",
+          "valor": 18.0
+        }
+      ]
+    },
+    {
+      "id": "panificacao",
+      "nome": "Panificação Artesanal",
+      "descricao": "Fermentação natural, produção diária",
+      "imagem": "assets/cat-panificacao.svg",
+      "produtos": [
+        {
+          "nome": "Croissant de Manteiga",
+          "descricao": "Massa folhada 48h de fermentação, manteiga francesa",
+          "valor": 13.0,
+          "destaque": true
+        },
+        {
+          "nome": "Pão de Fermentação Natural",
+          "descricao": "Fatia com manteiga de garrafa e flor de sal",
+          "valor": 11.0
+        },
+        {
+          "nome": "Focaccia do Dia",
+          "descricao": "Ervas frescas, azeite extravirgem e sal grosso",
+          "valor": 12.5
+        },
+        {
+          "nome": "Scone de Frutas Vermelhas",
+          "descricao": "Servido com geleia da casa e chantilly de baunilha",
+          "valor": 14.5
+        }
+      ]
+    },
+    {
+      "id": "pratos-salgados",
+      "nome": "Pratos Salgados",
+      "descricao": "Cozinha autoral para qualquer hora do dia",
+      "imagem": "assets/cat-pratos.svg",
+      "produtos": [
+        {
+          "nome": "Ovos Beneditinos",
+          "descricao": "Muffin inglês, ovo pochê, presunto cru e molho holandês",
+          "valor": 32.0,
+          "destaque": true
+        },
+        {
+          "nome": "Tábua de Frios Nômade",
+          "descricao": "Queijos e embutidos selecionados, geleia e torradas",
+          "valor": 48.0
+        },
+        {
+          "nome": "Sanduíche de Pastrami",
+          "descricao": "Pastrami defumado, mostarda dijon e picles no pão de centeio",
+          "valor": 34.0
+        },
+        {
+          "nome": "Salada de Grãos",
+          "descricao": "Quinoa, grão-de-bico, legumes assados e vinagrete de limão",
+          "valor": 29.0
+        },
+        {
+          "nome": "Omelete de Ervas",
+          "descricao": "Ervas frescas do jardim, queijo coalho e torrada rústica",
+          "valor": 27.0
+        }
+      ]
+    },
+    {
+      "id": "doces-sobremesas",
+      "nome": "Doces & Sobremesas",
+      "descricao": "Confeitaria de produção própria",
+      "imagem": "assets/cat-doces.svg",
+      "produtos": [
+        {
+          "nome": "Bolo de Cenoura com Chocolate",
+          "descricao": "Fatia generosa, cobertura de ganache 70%",
+          "valor": 16.0
+        },
+        {
+          "nome": "Cheesecake de Frutas Vermelhas",
+          "descricao": "Base amanteigada, calda artesanal da estação",
+          "valor": 19.0,
+          "destaque": true
+        },
+        {
+          "nome": "Brownie com Sorvete",
+          "descricao": "Brownie de chocolate 60%, bola de sorvete de creme",
+          "valor": 21.0
+        },
+        {
+          "nome": "Torta de Limão Siciliano",
+          "descricao": "Merengue maçaricado e crumble de castanhas",
+          "valor": 18.5
+        }
+      ]
+    }
+  ]
+}
