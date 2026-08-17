@@ -1,16 +1,16 @@
 /**
  * Cardápio Digital — script.js
  * Busca config.json e renderiza toda a interface dinamicamente.
- * Nenhum dado de cardápio fica hardcoded no HTML.
+ * Layout tipo painel (SaaS): uma categoria ativa por vez, navegação por
+ * sidebar/abas, e busca global que troca de categoria e localiza o item.
  */
 
 const CONFIG_URL = 'config.json';
 
-// Numeração romana para os "capítulos" do cardápio (uso estrutural, não decorativo:
-// menus impressos tradicionalmente numeram suas seções).
+// Numeração romana para os "capítulos" do cardápio (uso estrutural:
+// menus tradicionalmente numeram suas seções — não é decoração).
 const ROMANOS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
-// Ícones inline (sem dependência externa, para funcionar 100% offline no PWA)
 const ICONES = {
   instagram: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>',
   facebook: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.2h-3.1V7.7c0-.9.25-1.55 1.57-1.55h1.68V3.3C15.9 3.2 15 3.13 14 3.13c-2.4 0-4.05 1.47-4.05 4.15v2.5H7.25v3.2H10V21h3.5z"/></svg>',
@@ -18,6 +18,11 @@ const ICONES = {
   cartao: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 9.5h19"/></svg>',
   dinheiro: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>'
 };
+
+// Estado em memória
+let CATEGORIAS = [];
+let INDICE_BUSCA = []; // lista achatada de produtos com referência à categoria
+let categoriaAtivaId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   iniciarCardapio();
@@ -30,12 +35,22 @@ async function iniciarCardapio() {
     if (!resposta.ok) throw new Error(`Falha ao carregar ${CONFIG_URL}: ${resposta.status}`);
     const dados = await resposta.json();
 
-    renderizarEstabelecimento(dados.estabelecimento);
-    renderizarNavegacao(dados.categorias);
-    renderizarCategorias(dados.categorias);
-    renderizarFooter(dados.estabelecimento);
+    CATEGORIAS = dados.categorias;
 
-    configurarScrollSpy();
+    renderizarEstabelecimento(dados.estabelecimento);
+    construirIndiceBusca(CATEGORIAS);
+    renderizarNavegacao(CATEGORIAS);
+    renderizarPaineis(CATEGORIAS);
+    renderizarFooter(dados.estabelecimento);
+    configurarBusca();
+
+    const alvoInicial = (location.hash || '').replace('#', '') || CATEGORIAS[0]?.id;
+    ativarCategoria(alvoInicial, { atualizarHash: false });
+
+    window.addEventListener('hashchange', () => {
+      const id = location.hash.replace('#', '');
+      if (id) ativarCategoria(id, { atualizarHash: false });
+    });
   } catch (erro) {
     console.error('Erro ao montar o cardápio:', erro);
     renderizarErro();
@@ -43,7 +58,7 @@ async function iniciarCardapio() {
 }
 
 /* ---------------------------------------------------------
-   HEADER
+   TOPBAR — marca do estabelecimento
 --------------------------------------------------------- */
 function renderizarEstabelecimento(estabelecimento) {
   const logo = document.getElementById('logo-estabelecimento');
@@ -56,79 +71,86 @@ function renderizarEstabelecimento(estabelecimento) {
 }
 
 /* ---------------------------------------------------------
-   NAVEGAÇÃO STICKY (chips)
+   NAVEGAÇÃO — abas (mobile) + sidebar (desktop), mesma fonte de dados
 --------------------------------------------------------- */
 function renderizarNavegacao(categorias) {
-  const nav = document.getElementById('nav-categorias-lista');
-  const frag = document.createDocumentFragment();
+  const abas = document.getElementById('nav-categorias-lista');
+  const sidebar = document.getElementById('sidebar-lista');
+  const fragAbas = document.createDocumentFragment();
+  const fragSidebar = document.createDocumentFragment();
 
-  categorias.forEach((categoria) => {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'chip-categoria';
-    chip.textContent = categoria.nome;
-    chip.dataset.alvo = categoria.id;
-    chip.addEventListener('click', () => irParaCategoria(categoria.id));
-    frag.appendChild(chip);
+  categorias.forEach((categoria, indice) => {
+    const numero = ROMANOS[indice] || String(indice + 1).padStart(2, '0');
+
+    const aba = document.createElement('button');
+    aba.type = 'button';
+    aba.className = 'aba-categoria';
+    aba.dataset.alvo = categoria.id;
+    aba.innerHTML = `<span class="aba-categoria__numero">${numero}</span><span>${escapeTexto(categoria.nome)}</span>`;
+    aba.addEventListener('click', () => ativarCategoria(categoria.id));
+    fragAbas.appendChild(aba);
+
+    const itemSidebar = document.createElement('button');
+    itemSidebar.type = 'button';
+    itemSidebar.className = 'item-sidebar';
+    itemSidebar.dataset.alvo = categoria.id;
+    itemSidebar.innerHTML = `<span class="item-sidebar__numero">${numero}</span><span>${escapeTexto(categoria.nome)}</span>`;
+    itemSidebar.addEventListener('click', () => ativarCategoria(categoria.id));
+    fragSidebar.appendChild(itemSidebar);
   });
 
-  nav.appendChild(frag);
-}
-
-function irParaCategoria(id) {
-  const secao = document.getElementById(id);
-  if (!secao) return;
-  secao.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  abas.appendChild(fragAbas);
+  sidebar.appendChild(fragSidebar);
 }
 
 /* ---------------------------------------------------------
-   SEÇÕES DE CATEGORIA + PRODUTOS
+   PAINÉIS DE CATEGORIA (um visível por vez)
 --------------------------------------------------------- */
-function renderizarCategorias(categorias) {
-  const container = document.getElementById('categorias-container');
-  container.innerHTML = ''; // remove o estado de carregamento
+function renderizarPaineis(categorias) {
+  const painel = document.getElementById('painel-categoria');
+  document.getElementById('estado-carregando')?.remove();
 
   const frag = document.createDocumentFragment();
-
   categorias.forEach((categoria, indice) => {
-    frag.appendChild(construirSecaoCategoria(categoria, indice));
+    frag.appendChild(construirPainelCategoria(categoria, indice));
   });
-
-  container.appendChild(frag);
+  painel.appendChild(frag);
 }
 
-function construirSecaoCategoria(categoria, indice) {
+function construirPainelCategoria(categoria, indice) {
   const secao = document.createElement('section');
-  secao.className = 'categoria';
+  secao.className = 'categoria-painel';
   secao.id = categoria.id;
+  secao.hidden = true;
   secao.setAttribute('aria-labelledby', `titulo-${categoria.id}`);
 
   const numero = ROMANOS[indice] || String(indice + 1).padStart(2, '0');
 
   secao.innerHTML = `
-    <div class="categoria__cabecalho">
-      <img class="categoria__imagem" src="${escapeAtributo(categoria.imagem)}"
-           alt="${escapeAtributo(categoria.nome)}" loading="lazy">
-      <div class="categoria__legenda">
-        <span class="categoria__numero">CAPÍTULO ${numero}</span>
-        <h2 class="categoria__titulo" id="titulo-${categoria.id}">${escapeTexto(categoria.nome)}</h2>
-        ${categoria.descricao ? `<p class="categoria__descricao">${escapeTexto(categoria.descricao)}</p>` : ''}
+    <div class="categoria-painel__cabecalho">
+      <img class="categoria-painel__imagem" src="${escapeAtributo(categoria.imagem)}"
+           alt="" loading="lazy">
+      <div>
+        <span class="categoria-painel__numero">CAPÍTULO ${numero}</span>
+        <h2 class="categoria-painel__titulo" id="titulo-${categoria.id}">${escapeTexto(categoria.nome)}</h2>
+        ${categoria.descricao ? `<p class="categoria-painel__descricao">${escapeTexto(categoria.descricao)}</p>` : ''}
       </div>
     </div>
     <ul class="lista-produtos"></ul>
   `;
 
   const lista = secao.querySelector('.lista-produtos');
-  categoria.produtos.forEach((produto) => {
-    lista.appendChild(construirItemProduto(produto));
+  categoria.produtos.forEach((produto, i) => {
+    lista.appendChild(construirItemProduto(produto, `${categoria.id}__${i}`));
   });
 
   return secao;
 }
 
-function construirItemProduto(produto) {
+function construirItemProduto(produto, idProduto) {
   const item = document.createElement('li');
   item.className = 'produto';
+  item.id = `produto-${idProduto}`;
   item.innerHTML = `
     <div class="produto__info">
       <div class="produto__cabecalho">
@@ -143,42 +165,175 @@ function construirItemProduto(produto) {
 }
 
 function formatarPreco(valor) {
-  return Number(valor).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  });
+  return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 /* ---------------------------------------------------------
-   SCROLL SPY — destaca a chip da categoria visível
+   TROCA DE CATEGORIA ATIVA (navegação tipo SaaS)
 --------------------------------------------------------- */
-function configurarScrollSpy() {
-  const secoes = Array.from(document.querySelectorAll('.categoria'));
-  const chips = Array.from(document.querySelectorAll('.chip-categoria'));
-  if (!secoes.length) return;
+function ativarCategoria(id, { atualizarHash = true } = {}) {
+  const categoriaExiste = CATEGORIAS.some((c) => c.id === id);
+  if (!categoriaExiste) return;
 
-  const observer = new IntersectionObserver(
-    (entradas) => {
-      entradas.forEach((entrada) => {
-        if (!entrada.isIntersecting) return;
-        chips.forEach((chip) => {
-          chip.classList.toggle('is-ativo', chip.dataset.alvo === entrada.target.id);
-        });
-        const chipAtiva = chips.find((c) => c.dataset.alvo === entrada.target.id);
-        if (chipAtiva) chipAtiva.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+  document.querySelectorAll('.categoria-painel').forEach((painel) => {
+    painel.hidden = painel.id !== id;
+  });
+  document.querySelectorAll('.aba-categoria, .item-sidebar').forEach((el) => {
+    el.classList.toggle('is-ativo', el.dataset.alvo === id);
+  });
+
+  const abaAtiva = document.querySelector(`.aba-categoria[data-alvo="${id}"]`);
+  abaAtiva?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+
+  categoriaAtivaId = id;
+  if (atualizarHash) history.replaceState(null, '', `#${id}`);
+
+  document.getElementById('painel-categoria')?.scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' });
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+/* ---------------------------------------------------------
+   ÍNDICE DE BUSCA (achatado, sem acentos, com referência à categoria)
+--------------------------------------------------------- */
+function construirIndiceBusca(categorias) {
+  INDICE_BUSCA = [];
+  categorias.forEach((categoria) => {
+    categoria.produtos.forEach((produto, i) => {
+      INDICE_BUSCA.push({
+        idProduto: `${categoria.id}__${i}`,
+        categoriaId: categoria.id,
+        categoriaNome: categoria.nome,
+        nome: produto.nome,
+        descricao: produto.descricao || '',
+        valor: produto.valor,
+        chaveBusca: removerAcentos(`${produto.nome} ${produto.descricao || ''}`).toLowerCase()
       });
-    },
-    { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
-  );
+    });
+  });
+}
 
-  secoes.forEach((secao) => observer.observe(secao));
+function removerAcentos(texto) {
+  return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+/* ---------------------------------------------------------
+   BUSCA — campo, dropdown de resultados e redirecionamento
+--------------------------------------------------------- */
+function configurarBusca() {
+  const campo = document.getElementById('campo-busca');
+  const botaoLimpar = document.getElementById('busca-limpar');
+  const painelResultados = document.getElementById('busca-resultados');
+  const wrapper = document.getElementById('busca-wrapper');
+
+  campo.addEventListener('input', () => {
+    const termo = campo.value.trim();
+    botaoLimpar.hidden = termo.length === 0;
+
+    if (termo.length === 0) {
+      fecharResultadosBusca();
+      return;
+    }
+    const termoNormalizado = removerAcentos(termo).toLowerCase();
+    const encontrados = INDICE_BUSCA.filter((p) => p.chaveBusca.includes(termoNormalizado)).slice(0, 8);
+    renderizarResultadosBusca(encontrados, termo);
+  });
+
+  campo.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape') {
+      fecharResultadosBusca();
+      campo.blur();
+    }
+  });
+
+  botaoLimpar.addEventListener('click', () => {
+    campo.value = '';
+    botaoLimpar.hidden = true;
+    fecharResultadosBusca();
+    campo.focus();
+  });
+
+  document.addEventListener('click', (evento) => {
+    if (!wrapper.contains(evento.target)) fecharResultadosBusca();
+  });
+
+  function fecharResultadosBusca() {
+    painelResultados.hidden = true;
+    painelResultados.innerHTML = '';
+    campo.setAttribute('aria-expanded', 'false');
+  }
+
+  function renderizarResultadosBusca(resultados, termoOriginal) {
+    painelResultados.innerHTML = '';
+
+    if (resultados.length === 0) {
+      painelResultados.innerHTML = `<p class="busca__vazio">Nenhum item encontrado para "${escapeTexto(termoOriginal)}".</p>`;
+      painelResultados.hidden = false;
+      campo.setAttribute('aria-expanded', 'true');
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    resultados.forEach((resultado) => {
+      const botao = document.createElement('button');
+      botao.type = 'button';
+      botao.className = 'busca__resultado';
+      botao.setAttribute('role', 'option');
+      botao.innerHTML = `
+        <span class="busca__resultado-texto">
+          <span class="busca__resultado-nome">${destacarTermo(resultado.nome, termoOriginal)}</span>
+          <span class="busca__resultado-categoria">${escapeTexto(resultado.categoriaNome)}</span>
+        </span>
+        <span class="busca__resultado-valor">${formatarPreco(resultado.valor)}</span>
+      `;
+      botao.addEventListener('click', () => {
+        irParaResultado(resultado);
+        campo.value = '';
+        botaoLimpar.hidden = true;
+        fecharResultadosBusca();
+      });
+      frag.appendChild(botao);
+    });
+
+    painelResultados.appendChild(frag);
+    painelResultados.hidden = false;
+    campo.setAttribute('aria-expanded', 'true');
+  }
+}
+
+function destacarTermo(texto, termo) {
+  const textoEscapado = escapeTexto(texto);
+  if (!termo) return textoEscapado;
+  const termoNormalizado = removerAcentos(termo).toLowerCase();
+  const textoNormalizado = removerAcentos(texto).toLowerCase();
+  const posicao = textoNormalizado.indexOf(termoNormalizado);
+  if (posicao === -1) return textoEscapado;
+
+  const antes = escapeTexto(texto.slice(0, posicao));
+  const meio = escapeTexto(texto.slice(posicao, posicao + termo.length));
+  const depois = escapeTexto(texto.slice(posicao + termo.length));
+  return `${antes}<mark>${meio}</mark>${depois}`;
+}
+
+// Troca para a categoria do resultado e rola/realça o produto encontrado
+function irParaResultado(resultado) {
+  ativarCategoria(resultado.categoriaId);
+
+  requestAnimationFrame(() => {
+    const elemento = document.getElementById(`produto-${resultado.idProduto}`);
+    if (!elemento) return;
+    elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    elemento.classList.remove('is-encontrado');
+    // força reflow para reiniciar a animação mesmo em cliques repetidos
+    void elemento.offsetWidth;
+    elemento.classList.add('is-encontrado');
+    setTimeout(() => elemento.classList.remove('is-encontrado'), 1900);
+  });
 }
 
 /* ---------------------------------------------------------
    FOOTER
 --------------------------------------------------------- */
 function renderizarFooter(estabelecimento) {
-  // Pagamentos
   const listaPagamentos = document.getElementById('lista-pagamentos');
   estabelecimento.formasPagamento.forEach((forma) => {
     const li = document.createElement('li');
@@ -187,11 +342,9 @@ function renderizarFooter(estabelecimento) {
     listaPagamentos.appendChild(li);
   });
 
-  // Endereço e horário
   document.getElementById('footer-endereco').textContent = estabelecimento.endereco;
   document.getElementById('footer-horario').textContent = estabelecimento.horario || '';
 
-  // Contato
   const { whatsapp, whatsappExibicao, telefone } = estabelecimento.contato;
   const linkWhats = document.getElementById('footer-whatsapp');
   linkWhats.textContent = `WhatsApp: ${whatsappExibicao || whatsapp}`;
@@ -203,12 +356,10 @@ function renderizarFooter(estabelecimento) {
   linkTel.textContent = `Telefone: ${telefone}`;
   linkTel.href = `tel:${telefone.replace(/\D/g, '')}`;
 
-  // Botão flutuante do WhatsApp
   const botaoWhats = document.getElementById('botao-whatsapp');
   botaoWhats.href = `https://wa.me/${whatsapp}`;
   botaoWhats.hidden = false;
 
-  // Redes sociais
   const containerRedes = document.getElementById('footer-redes');
   (estabelecimento.redesSociais || []).forEach((rede) => {
     const a = document.createElement('a');
@@ -228,8 +379,8 @@ function renderizarFooter(estabelecimento) {
    ESTADO DE ERRO
 --------------------------------------------------------- */
 function renderizarErro() {
-  const container = document.getElementById('categorias-container');
-  container.innerHTML = `
+  const painel = document.getElementById('painel-categoria');
+  painel.innerHTML = `
     <div class="estado-erro" role="alert">
       <p>Não foi possível carregar o cardápio agora.</p>
       <p>Verifique sua conexão e tente novamente.</p>

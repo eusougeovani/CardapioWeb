@@ -10,7 +10,7 @@
  * (HTML/CSS/JS), para que os clientes já instalados peguem a versão nova.
  */
 
-const CACHE_VERSION = 'cardapio-v1';
+const CACHE_VERSION = 'cardapio-v2';
 
 const APP_SHELL = [
   './',
