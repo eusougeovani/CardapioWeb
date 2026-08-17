@@ -1,6 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
-  <circle cx="120" cy="120" r="98" fill="none" stroke="#C9A15A" stroke-width="2.5"/>
-  <circle cx="120" cy="120" r="86" fill="none" stroke="#C9A15A" stroke-width="1"/>
-  <text x="120" y="112" font-family="Georgia, 'Times New Roman', serif" font-size="64" fill="#F3EDE4" text-anchor="middle">N</text>
-  <text x="120" y="150" font-family="Georgia, 'Times New Roman', serif" font-size="14" letter-spacing="4" fill="#C9A15A" text-anchor="middle">NÔMADE</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <circle cx="60" cy="60" r="52" fill="#F7F4EA" stroke="#1C2B42" stroke-width="1.5"/>
+  <circle cx="60" cy="60" r="43" fill="none" stroke="#B15A2E" stroke-width="1"/>
+  <text x="60" y="70" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#1C2B42" text-anchor="middle">N</text>
 </svg>
