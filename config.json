@@ -1,18 +1,19 @@
 {
   "estabelecimento": {
-    "nome": "Nome do Estabelecimento",
-    "tagline": "Descrição do Estabelecimento",
+    "nome": "Torrefação Nômade",
+    "tagline": "Café de especialidade & cozinha autoral",
     "logo": "assets/logo.svg",
-    "endereco": "Rua Avenida, N° 00 — Bairro, Cidade/ESTADO",
-    "horario": "Seg. a Dom. · 00h às 23h",
+    "endereco": "Rua dos Pinheiros, 482 — Pinheiros, São Paulo/SP",
+    "horario": "Ter. a Dom. · 08h às 20h",
+    "avaliacaoUrl": "https://g.page/r/exemplo-torrefacao-nomade/review",
     "contato": {
       "whatsapp": "5511999999999",
       "whatsappExibicao": "(11) 99999-9999",
       "telefone": "(11) 3456-7890"
     },
     "redesSociais": [
-      { "nome": "Instagram", "url": "https://instagram.com/", "icone": "instagram" },
-      { "nome": "Facebook", "url": "https://facebook.com/", "icone": "facebook" }
+      { "nome": "Instagram", "url": "https://instagram.com/torrefacaonomade", "icone": "instagram" },
+      { "nome": "Facebook", "url": "https://facebook.com/torrefacaonomade", "icone": "facebook" }
     ],
     "formasPagamento": [
       { "nome": "Pix", "icone": "pix" },
@@ -23,74 +24,187 @@
   },
   "categorias": [
     {
-      "id": "categoria1",
-      "nome": "Categoria 1",
-      "descricao": "Descrição 1",
+      "id": "cafes-especiais",
+      "nome": "Cafés Especiais",
+      "descricao": "Grãos de origem única, torra artesanal semanal",
       "imagem": "assets/cat-cafes.svg",
       "produtos": [
         {
-          "nome": "Produto 1",
-          "descricao": "Descrição 1",
-          "valor": 0.0
+          "codigo": "C01",
+          "nome": "Espresso Duplo",
+          "descricao": "Blend nômade, notas de caramelo e castanha",
+          "detalhes": "Dose dupla extraída em 25 segundos, blend próprio com grãos do Sul de Minas e Cerrado Mineiro.",
+          "valor": 9.5,
+          "imagem": "assets/produtos/espresso-duplo.svg",
+          "tags": ["cafeina", "vegano"]
         },
         {
-          "nome": "Produto 2",
-          "descricao": "Descrição 2",
-          "valor": 0.0
+          "codigo": "C02",
+          "nome": "Filtrado V60",
+          "descricao": "Café de origem única, extração lenta na hora",
+          "detalhes": "Método filtrado feito na hora, grão de origem única rotativa — pergunte ao barista qual está em safra.",
+          "valor": 16.0,
+          "imagem": "assets/produtos/filtrado-v60.svg",
+          "tags": ["cafeina", "vegano"],
+          "destaque": true
+        },
+        {
+          "codigo": "C03",
+          "nome": "Cappuccino Cremoso",
+          "descricao": "Espresso, leite vaporizado e canela em pó",
+          "valor": 14.0,
+          "imagem": "assets/produtos/cappuccino.svg",
+          "tags": ["cafeina", "vegetariano"]
+        },
+        {
+          "codigo": "C04",
+          "nome": "Flat White",
+          "descricao": "Dose dupla de espresso com microespuma de leite",
+          "valor": 15.5,
+          "imagem": "assets/produtos/flat-white.svg",
+          "tags": ["cafeina", "vegetariano"]
+        },
+        {
+          "codigo": "C05",
+          "nome": "Café Gelado Nitro",
+          "descricao": "Infusão a frio servida com textura cremosa de nitrogênio",
+          "detalhes": "Infusão a frio por 18 horas, servida na torneira com nitrogênio para textura cremosa sem leite.",
+          "valor": 18.0,
+          "imagem": "assets/produtos/nitro.svg",
+          "tags": ["cafeina", "vegano"]
         }
       ]
     },
     {
-      "id": "categoria2",
-      "nome": "Categoria 2",
-      "descricao": "Descrição 2",
-      "imagem": "assets/cat-cafes.svg",
+      "id": "panificacao",
+      "nome": "Panificação Artesanal",
+      "descricao": "Fermentação natural, produção diária",
+      "imagem": "assets/cat-panificacao.svg",
       "produtos": [
         {
-          "nome": "Produto 3",
-          "descricao": "Descrição 3",
-          "valor": 0.0
+          "codigo": "P01",
+          "nome": "Croissant de Manteiga",
+          "descricao": "Massa folhada 48h de fermentação, manteiga francesa",
+          "detalhes": "48 horas de fermentação e laminação, manteiga francesa 82% de gordura.",
+          "valor": 13.0,
+          "imagem": "assets/produtos/croissant.svg",
+          "tags": ["vegetariano"],
+          "destaque": true
         },
         {
-          "nome": "Produto 4",
-          "descricao": "Descrição 4",
-          "valor": 0.0
+          "codigo": "P02",
+          "nome": "Pão de Fermentação Natural",
+          "descricao": "Fatia com manteiga de garrafa e flor de sal",
+          "valor": 11.0,
+          "imagem": "assets/produtos/pao-fermentacao.svg",
+          "tags": ["vegano"]
+        },
+        {
+          "codigo": "P03",
+          "nome": "Focaccia do Dia",
+          "descricao": "Ervas frescas, azeite extravirgem e sal grosso",
+          "valor": 12.5,
+          "imagem": "assets/produtos/focaccia.svg",
+          "tags": ["vegano"]
+        },
+        {
+          "codigo": "P04",
+          "nome": "Scone de Frutas Vermelhas",
+          "descricao": "Servido com geleia da casa e chantilly de baunilha",
+          "valor": 14.5,
+          "imagem": "assets/produtos/scone.svg",
+          "tags": ["vegetariano", "doce"]
         }
       ]
     },
     {
-      "id": "categoria3",
-      "nome": "Categoria 3",
-      "descricao": "Descrição 3",
-      "imagem": "assets/cat-cafes.svg",
+      "id": "pratos-salgados",
+      "nome": "Pratos Salgados",
+      "descricao": "Cozinha autoral para qualquer hora do dia",
+      "imagem": "assets/cat-pratos.svg",
       "produtos": [
         {
-          "nome": "Produto 5",
-          "descricao": "Descrição 5",
-          "valor": 0.0
+          "codigo": "R01",
+          "nome": "Ovos Beneditinos",
+          "descricao": "Muffin inglês, ovo pochê, presunto cru e molho holandês",
+          "valor": 32.0,
+          "imagem": "assets/produtos/ovos-beneditinos.svg",
+          "tags": ["vegetariano"],
+          "destaque": true
         },
         {
-          "nome": "Produto 6",
-          "descricao": "Descrição 6",
-          "valor": 0.0
+          "codigo": "R02",
+          "nome": "Tábua de Frios Nômade",
+          "descricao": "Queijos e embutidos selecionados, geleia e torradas",
+          "detalhes": "Seleção de 3 queijos e 2 embutidos nacionais, geleia artesanal da casa e torradas de fermentação natural. Serve bem 2 pessoas.",
+          "valor": 48.0,
+          "imagem": "assets/produtos/tabua-frios.svg",
+          "tags": ["salgado"]
+        },
+        {
+          "codigo": "R03",
+          "nome": "Sanduíche de Pastrami",
+          "descricao": "Pastrami defumado, mostarda dijon e picles no pão de centeio",
+          "valor": 34.0,
+          "imagem": "assets/produtos/pastrami.svg",
+          "tags": ["salgado"]
+        },
+        {
+          "codigo": "R04",
+          "nome": "Salada de Grãos",
+          "descricao": "Quinoa, grão-de-bico, legumes assados e vinagrete de limão",
+          "valor": 29.0,
+          "imagem": "assets/produtos/salada-graos.svg",
+          "tags": ["vegano", "semGluten"]
+        },
+        {
+          "codigo": "R05",
+          "nome": "Omelete de Ervas",
+          "descricao": "Ervas frescas do jardim, queijo coalho e torrada rústica",
+          "valor": 27.0,
+          "imagem": "assets/produtos/omelete.svg",
+          "tags": ["vegetariano", "semGluten"]
         }
       ]
     },
     {
-      "id": "categoria4",
-      "nome": "Categoria 4",
-      "descricao": "Descrição 4",
-      "imagem": "assets/cat-cafes.svg",
+      "id": "doces-sobremesas",
+      "nome": "Doces & Sobremesas",
+      "descricao": "Confeitaria de produção própria",
+      "imagem": "assets/cat-doces.svg",
       "produtos": [
         {
-          "nome": "Produto 7",
-          "descricao": "Descrição 7",
-          "valor": 0.0
+          "codigo": "D01",
+          "nome": "Bolo de Cenoura com Chocolate",
+          "descricao": "Fatia generosa, cobertura de ganache 70%",
+          "valor": 16.0,
+          "imagem": "assets/produtos/bolo-cenoura.svg",
+          "tags": ["vegetariano", "doce"]
         },
         {
-          "nome": "Produto 8",
-          "descricao": "Descrição 8",
-          "valor": 0.0
+          "codigo": "D02",
+          "nome": "Cheesecake de Frutas Vermelhas",
+          "descricao": "Base amanteigada, calda artesanal da estação",
+          "valor": 19.0,
+          "imagem": "assets/produtos/cheesecake.svg",
+          "tags": ["vegetariano", "doce"],
+          "destaque": true
+        },
+        {
+          "codigo": "D03",
+          "nome": "Brownie com Sorvete",
+          "descricao": "Brownie de chocolate 60%, bola de sorvete de creme",
+          "valor": 21.0,
+          "imagem": "assets/produtos/brownie.svg",
+          "tags": ["vegetariano", "doce"]
+        },
+        {
+          "codigo": "D04",
+          "nome": "Torta de Limão Siciliano",
+          "descricao": "Merengue maçaricado e crumble de castanhas",
+          "valor": 18.5,
+          "imagem": "assets/produtos/torta-limao.svg",
+          "tags": ["vegetariano", "doce"]
         }
       ]
     }

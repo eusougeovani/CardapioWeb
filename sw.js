@@ -7,10 +7,11 @@
  *    quando online, mas ainda funcionar offline com a última versão em cache.
  *
  * IMPORTANTE: incremente CACHE_VERSION sempre que publicar mudanças no app shell
- * (HTML/CSS/JS), para que os clientes já instalados peguem a versão nova.
+ * (HTML/CSS/JS) ou na lista de imagens, para que os clientes já instalados
+ * peguem a versão nova.
  */
 
-const CACHE_VERSION = 'cardapio-v2';
+const CACHE_VERSION = 'cardapio-v3';
 
 const APP_SHELL = [
   './',
@@ -25,7 +26,25 @@ const APP_SHELL = [
   './assets/cat-pratos.svg',
   './assets/cat-doces.svg',
   './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png'
+  './assets/icons/icon-512.png',
+  './assets/produtos/espresso-duplo.svg',
+  './assets/produtos/filtrado-v60.svg',
+  './assets/produtos/cappuccino.svg',
+  './assets/produtos/flat-white.svg',
+  './assets/produtos/nitro.svg',
+  './assets/produtos/croissant.svg',
+  './assets/produtos/pao-fermentacao.svg',
+  './assets/produtos/focaccia.svg',
+  './assets/produtos/scone.svg',
+  './assets/produtos/ovos-beneditinos.svg',
+  './assets/produtos/tabua-frios.svg',
+  './assets/produtos/pastrami.svg',
+  './assets/produtos/salada-graos.svg',
+  './assets/produtos/omelete.svg',
+  './assets/produtos/bolo-cenoura.svg',
+  './assets/produtos/cheesecake.svg',
+  './assets/produtos/brownie.svg',
+  './assets/produtos/torta-limao.svg'
 ];
 
 // Instalação: pré-armazena o app shell
@@ -75,7 +94,6 @@ async function estrategiaCacheFirst(request) {
     cache.put(request, resposta.clone());
     return resposta;
   } catch (erro) {
-    // Sem cache e sem rede: não há muito a fazer para recursos não previstos
     return new Response('Offline e recurso não disponível em cache.', {
       status: 503,
       statusText: 'Offline'

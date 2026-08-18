@@ -1,14 +1,11 @@
 /**
  * Cardápio Digital — script.js
- * Busca config.json e renderiza toda a interface dinamicamente.
- * Layout tipo painel (SaaS): uma categoria ativa por vez, navegação por
- * sidebar/abas, e busca global que troca de categoria e localiza o item.
+ * Fetch do config.json + renderização dinâmica.
+ * Arquitetura: capa/Início, grade de categorias, painel de produtos
+ * por categoria, modal de produto e busca em overlay com redirecionamento.
  */
 
 const CONFIG_URL = 'config.json';
-
-// Numeração romana para os "capítulos" do cardápio (uso estrutural:
-// menus tradicionalmente numeram suas seções — não é decoração).
 const ROMANOS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
 const ICONES = {
@@ -19,9 +16,46 @@ const ICONES = {
   dinheiro: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>'
 };
 
+// Vocabulário de selos/símbolos do produto: ícone + rótulo em pt-BR.
+const ICONES_TAGS = {
+  vegano: {
+    rotulo: 'Vegano',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 20c8-1 12-6 13-14-8 1-13 5-13 14Z"/><path d="M6 19c2-3 4-6 9-11"/></svg>'
+  },
+  vegetariano: {
+    rotulo: 'Vegetariano',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M8 13c0-3 1.8-5 4-5s4 2 4 5-1.8 4-4 4-4-1-4-4Z"/></svg>'
+  },
+  cafeina: {
+    rotulo: 'Contém cafeína',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z"/><path d="M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3.5c0 1-1.2 1.2-1.2 2.2S8 7 8 8M12 3.5c0 1-1.2 1.2-1.2 2.2S12 7 12 8"/></svg>'
+  },
+  semGluten: {
+    rotulo: 'Sem glúten',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c1 3-2 4-2 7s3 4 2 7"/><path d="M12 3c-1 3 2 4 2 7s-3 4-2 7"/><path d="m4 4 16 16"/></svg>'
+  },
+  semLactose: {
+    rotulo: 'Sem lactose',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 2h6v3.5L17 9v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l2-3.5V2Z"/><path d="m4 4 16 16"/></svg>'
+  },
+  apimentado: {
+    rotulo: 'Apimentado',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 10c-1.5 1.5-2 6 1 8.5 3 2.4 8 .8 9.5-2.5 1.3-3-1-5-2.5-4.5"/><path d="M8 9c2-3.5 5.5-5.5 9-5-1 2-.5 3.5.5 4-3 1-6.5.5-9.5 1Z"/></svg>'
+  },
+  doce: {
+    rotulo: 'Doce',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v3M12 19v3M4.5 4.5l2 2M17.5 17.5l2 2M4.5 19.5l2-2M17.5 6.5l2-2"/><circle cx="12" cy="12" r="5"/></svg>'
+  },
+  salgado: {
+    rotulo: 'Salgado',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="9" rx="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'
+  }
+};
+
 // Estado em memória
+let ESTABELECIMENTO = null;
 let CATEGORIAS = [];
-let INDICE_BUSCA = []; // lista achatada de produtos com referência à categoria
+let INDICE_BUSCA = [];
 let categoriaAtivaId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,22 +69,23 @@ async function iniciarCardapio() {
     if (!resposta.ok) throw new Error(`Falha ao carregar ${CONFIG_URL}: ${resposta.status}`);
     const dados = await resposta.json();
 
+    ESTABELECIMENTO = dados.estabelecimento;
     CATEGORIAS = dados.categorias;
 
-    renderizarEstabelecimento(dados.estabelecimento);
+    renderizarMarca(ESTABELECIMENTO);
+    renderizarCapa(ESTABELECIMENTO, CATEGORIAS);
     construirIndiceBusca(CATEGORIAS);
-    renderizarNavegacao(CATEGORIAS);
+    renderizarSidebar(CATEGORIAS);
+    renderizarGradeCategorias(CATEGORIAS);
     renderizarPaineis(CATEGORIAS);
-    renderizarFooter(dados.estabelecimento);
+    renderizarFooter(ESTABELECIMENTO);
+
+    configurarNavegacaoPrincipal();
     configurarBusca();
+    configurarModalProduto();
 
-    const alvoInicial = (location.hash || '').replace('#', '') || CATEGORIAS[0]?.id;
-    ativarCategoria(alvoInicial, { atualizarHash: false });
-
-    window.addEventListener('hashchange', () => {
-      const id = location.hash.replace('#', '');
-      if (id) ativarCategoria(id, { atualizarHash: false });
-    });
+    aplicarRota(location.hash.replace('#', ''));
+    window.addEventListener('hashchange', () => aplicarRota(location.hash.replace('#', '')));
   } catch (erro) {
     console.error('Erro ao montar o cardápio:', erro);
     renderizarErro();
@@ -58,62 +93,165 @@ async function iniciarCardapio() {
 }
 
 /* ---------------------------------------------------------
-   TOPBAR — marca do estabelecimento
+   MARCA (topbar) e CAPA (Início)
 --------------------------------------------------------- */
-function renderizarEstabelecimento(estabelecimento) {
-  const logo = document.getElementById('logo-estabelecimento');
-  logo.src = estabelecimento.logo;
-  logo.alt = `Logo de ${estabelecimento.nome}`;
-
+function renderizarMarca(estabelecimento) {
+  const logoTopo = document.getElementById('logo-estabelecimento');
+  logoTopo.src = estabelecimento.logo;
+  logoTopo.alt = `Logo de ${estabelecimento.nome}`;
   document.getElementById('nome-estabelecimento').textContent = estabelecimento.nome;
   document.getElementById('tagline-estabelecimento').textContent = estabelecimento.tagline || '';
   document.title = estabelecimento.nome;
+
+  if (estabelecimento.avaliacaoUrl) {
+    [document.getElementById('link-avaliar-desktop'), document.getElementById('link-avaliar-mobile')].forEach((link) => {
+      link.href = estabelecimento.avaliacaoUrl;
+      link.hidden = false;
+    });
+  }
+}
+
+function renderizarCapa(estabelecimento, categorias) {
+  document.getElementById('capa-logo').src = estabelecimento.logo;
+  document.getElementById('capa-logo').alt = `Logo de ${estabelecimento.nome}`;
+  document.getElementById('capa-nome').textContent = estabelecimento.nome;
+  document.getElementById('capa-tagline').textContent = estabelecimento.tagline || '';
+  document.getElementById('capa-endereco').textContent = estabelecimento.endereco || '';
+  document.getElementById('capa-horario').textContent = estabelecimento.horario || '';
+
+  const atalhos = document.getElementById('capa-atalhos');
+  categorias.forEach((categoria) => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip-atalho';
+    chip.textContent = categoria.nome;
+    chip.addEventListener('click', () => selecionarCategoria(categoria.id));
+    atalhos.appendChild(chip);
+  });
 }
 
 /* ---------------------------------------------------------
-   NAVEGAÇÃO — abas (mobile) + sidebar (desktop), mesma fonte de dados
+   NAVEGAÇÃO PRINCIPAL — topbar, bottom nav e capa
 --------------------------------------------------------- */
-function renderizarNavegacao(categorias) {
-  const abas = document.getElementById('nav-categorias-lista');
+function configurarNavegacaoPrincipal() {
+  document.getElementById('botao-ir-inicio').addEventListener('click', irParaInicio);
+  document.getElementById('botao-ver-cardapio').addEventListener('click', irParaCategorias);
+  document.getElementById('sidebar-inicio').addEventListener('click', irParaInicio);
+
+  document.querySelectorAll('[data-vista]').forEach((elemento) => {
+    elemento.addEventListener('click', () => {
+      const vista = elemento.dataset.vista;
+      if (vista === 'inicio') irParaInicio();
+      else irParaCategorias();
+    });
+  });
+}
+
+function irParaInicio() {
+  history.replaceState(null, '', '#inicio');
+  aplicarRota('inicio');
+}
+function irParaCategorias() {
+  history.replaceState(null, '', '#categorias');
+  aplicarRota('categorias');
+}
+function selecionarCategoria(id) {
+  history.replaceState(null, '', `#${id}`);
+  aplicarRota(id);
+}
+
+// Único ponto que efetivamente manipula o DOM de navegação — usado tanto
+// pelas funções acima quanto pelo evento hashchange (sem duplicar histórico).
+function aplicarRota(alvo) {
+  const ehCategoriaValida = CATEGORIAS.some((c) => c.id === alvo);
+
+  if (ehCategoriaValida) {
+    mostrarVista('categorias');
+    categoriaAtivaId = alvo;
+  } else if (alvo === 'categorias') {
+    mostrarVista('categorias');
+    categoriaAtivaId = null;
+  } else {
+    mostrarVista('inicio');
+    categoriaAtivaId = null;
+  }
+
+  document.getElementById('grade-categorias').hidden = categoriaAtivaId !== null;
+  document.querySelectorAll('.categoria-painel').forEach((painel) => {
+    painel.hidden = painel.id !== categoriaAtivaId;
+  });
+  document.querySelectorAll('.item-sidebar').forEach((el) => {
+    el.classList.toggle('is-ativo', el.dataset.alvo === categoriaAtivaId);
+  });
+
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function mostrarVista(nome) {
+  document.getElementById('vista-inicio').hidden = nome !== 'inicio';
+  document.getElementById('vista-cardapio').hidden = nome !== 'categorias';
+  document.querySelectorAll('.topbar__link, .bottom-nav__item[data-vista]').forEach((el) => {
+    el.classList.toggle('is-ativo', el.dataset.vista === nome);
+  });
+}
+
+/* ---------------------------------------------------------
+   SIDEBAR (desktop)
+--------------------------------------------------------- */
+function renderizarSidebar(categorias) {
   const sidebar = document.getElementById('sidebar-lista');
-  const fragAbas = document.createDocumentFragment();
-  const fragSidebar = document.createDocumentFragment();
+  const frag = document.createDocumentFragment();
 
   categorias.forEach((categoria, indice) => {
     const numero = ROMANOS[indice] || String(indice + 1).padStart(2, '0');
-
-    const aba = document.createElement('button');
-    aba.type = 'button';
-    aba.className = 'aba-categoria';
-    aba.dataset.alvo = categoria.id;
-    aba.innerHTML = `<span class="aba-categoria__numero">${numero}</span><span>${escapeTexto(categoria.nome)}</span>`;
-    aba.addEventListener('click', () => ativarCategoria(categoria.id));
-    fragAbas.appendChild(aba);
-
-    const itemSidebar = document.createElement('button');
-    itemSidebar.type = 'button';
-    itemSidebar.className = 'item-sidebar';
-    itemSidebar.dataset.alvo = categoria.id;
-    itemSidebar.innerHTML = `<span class="item-sidebar__numero">${numero}</span><span>${escapeTexto(categoria.nome)}</span>`;
-    itemSidebar.addEventListener('click', () => ativarCategoria(categoria.id));
-    fragSidebar.appendChild(itemSidebar);
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'item-sidebar';
+    item.dataset.alvo = categoria.id;
+    item.innerHTML = `<span class="item-sidebar__numero">${numero}</span><span>${escapeTexto(categoria.nome)}</span>`;
+    item.addEventListener('click', () => selecionarCategoria(categoria.id));
+    frag.appendChild(item);
   });
 
-  abas.appendChild(fragAbas);
-  sidebar.appendChild(fragSidebar);
+  sidebar.appendChild(frag);
 }
 
 /* ---------------------------------------------------------
-   PAINÉIS DE CATEGORIA (um visível por vez)
+   GRADE DE CATEGORIAS (visão geral)
+--------------------------------------------------------- */
+function renderizarGradeCategorias(categorias) {
+  const lista = document.getElementById('grade-categorias-lista');
+  const frag = document.createDocumentFragment();
+
+  categorias.forEach((categoria, indice) => {
+    const numero = ROMANOS[indice] || String(indice + 1).padStart(2, '0');
+    const cartao = document.createElement('button');
+    cartao.type = 'button';
+    cartao.className = 'cartao-categoria';
+    cartao.innerHTML = `
+      <img class="cartao-categoria__imagem" src="${escapeAtributo(categoria.imagem)}" alt="" loading="lazy">
+      <span class="cartao-categoria__corpo">
+        <span class="cartao-categoria__numero">CAPÍTULO ${numero}</span>
+        <span class="cartao-categoria__nome">${escapeTexto(categoria.nome)}</span>
+        <span class="cartao-categoria__contagem">${categoria.produtos.length} itens</span>
+      </span>
+    `;
+    cartao.addEventListener('click', () => selecionarCategoria(categoria.id));
+    frag.appendChild(cartao);
+  });
+
+  lista.appendChild(frag);
+}
+
+/* ---------------------------------------------------------
+   PAINÉIS DE CATEGORIA + LISTA DE PRODUTOS
 --------------------------------------------------------- */
 function renderizarPaineis(categorias) {
   const painel = document.getElementById('painel-categoria');
   document.getElementById('estado-carregando')?.remove();
 
   const frag = document.createDocumentFragment();
-  categorias.forEach((categoria, indice) => {
-    frag.appendChild(construirPainelCategoria(categoria, indice));
-  });
+  categorias.forEach((categoria, indice) => frag.appendChild(construirPainelCategoria(categoria, indice)));
   painel.appendChild(frag);
 }
 
@@ -127,40 +265,54 @@ function construirPainelCategoria(categoria, indice) {
   const numero = ROMANOS[indice] || String(indice + 1).padStart(2, '0');
 
   secao.innerHTML = `
+    <button type="button" class="categoria-painel__voltar">&larr; Categorias</button>
     <div class="categoria-painel__cabecalho">
-      <img class="categoria-painel__imagem" src="${escapeAtributo(categoria.imagem)}"
-           alt="" loading="lazy">
+      <img class="categoria-painel__imagem" src="${escapeAtributo(categoria.imagem)}" alt="" loading="lazy">
       <div>
         <span class="categoria-painel__numero">CAPÍTULO ${numero}</span>
         <h2 class="categoria-painel__titulo" id="titulo-${categoria.id}">${escapeTexto(categoria.nome)}</h2>
         ${categoria.descricao ? `<p class="categoria-painel__descricao">${escapeTexto(categoria.descricao)}</p>` : ''}
       </div>
     </div>
-    <ul class="lista-produtos"></ul>
+    <div class="lista-produtos"></div>
   `;
+
+  secao.querySelector('.categoria-painel__voltar').addEventListener('click', irParaCategorias);
 
   const lista = secao.querySelector('.lista-produtos');
   categoria.produtos.forEach((produto, i) => {
-    lista.appendChild(construirItemProduto(produto, `${categoria.id}__${i}`));
+    lista.appendChild(construirItemProduto(produto, `${categoria.id}__${i}`, categoria.nome, categoria.imagem));
   });
 
   return secao;
 }
 
-function construirItemProduto(produto, idProduto) {
-  const item = document.createElement('li');
+function construirItemProduto(produto, idProduto, categoriaNome, imagemCategoriaFallback) {
+  const item = document.createElement('button');
+  item.type = 'button';
   item.className = 'produto';
   item.id = `produto-${idProduto}`;
+
+  const tagsIcones = (produto.tags || []).slice(0, 3)
+    .filter((chave) => ICONES_TAGS[chave])
+    .map((chave) => `<span title="${escapeAtributo(ICONES_TAGS[chave].rotulo)}">${ICONES_TAGS[chave].svg}</span>`)
+    .join('');
+
   item.innerHTML = `
-    <div class="produto__info">
-      <div class="produto__cabecalho">
+    <img class="produto__miniatura" src="${escapeAtributo(produto.imagem || imagemCategoriaFallback)}" alt="" loading="lazy">
+    <span class="produto__info">
+      <span class="produto__cabecalho">
+        ${produto.codigo ? `<span class="produto__codigo">#${escapeTexto(produto.codigo)}</span>` : ''}
         <span class="produto__nome">${escapeTexto(produto.nome)}</span>
         ${produto.destaque ? '<span class="produto__selo">Destaque</span>' : ''}
-      </div>
-      ${produto.descricao ? `<p class="produto__descricao">${escapeTexto(produto.descricao)}</p>` : ''}
-    </div>
+      </span>
+      ${produto.descricao ? `<span class="produto__descricao">${escapeTexto(produto.descricao)}</span>` : ''}
+      ${tagsIcones ? `<span class="produto__tags-mini">${tagsIcones}</span>` : ''}
+    </span>
     <span class="produto__valor">${formatarPreco(produto.valor)}</span>
   `;
+
+  item.addEventListener('click', () => abrirModalProduto(produto, categoriaNome, imagemCategoriaFallback));
   return item;
 }
 
@@ -169,31 +321,57 @@ function formatarPreco(valor) {
 }
 
 /* ---------------------------------------------------------
-   TROCA DE CATEGORIA ATIVA (navegação tipo SaaS)
+   MODAL DE PRODUTO (janela flutuante)
 --------------------------------------------------------- */
-function ativarCategoria(id, { atualizarHash = true } = {}) {
-  const categoriaExiste = CATEGORIAS.some((c) => c.id === id);
-  if (!categoriaExiste) return;
+function configurarModalProduto() {
+  const overlay = document.getElementById('produto-overlay');
+  const botaoFechar = document.getElementById('botao-fechar-produto');
 
-  document.querySelectorAll('.categoria-painel').forEach((painel) => {
-    painel.hidden = painel.id !== id;
+  botaoFechar.addEventListener('click', fecharModalProduto);
+  overlay.addEventListener('click', (evento) => {
+    if (evento.target === overlay) fecharModalProduto();
   });
-  document.querySelectorAll('.aba-categoria, .item-sidebar').forEach((el) => {
-    el.classList.toggle('is-ativo', el.dataset.alvo === id);
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape' && !overlay.hidden) fecharModalProduto();
   });
+}
 
-  const abaAtiva = document.querySelector(`.aba-categoria[data-alvo="${id}"]`);
-  abaAtiva?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+function abrirModalProduto(produto, categoriaNome, imagemFallback) {
+  document.getElementById('modal-produto-imagem').src = produto.imagem || imagemFallback;
+  document.getElementById('modal-produto-imagem').alt = produto.nome;
+  document.getElementById('modal-produto-codigo').textContent = produto.codigo ? `#${produto.codigo} · ${categoriaNome}` : categoriaNome;
+  document.getElementById('modal-produto-nome').textContent = produto.nome;
+  document.getElementById('modal-produto-descricao').textContent = produto.descricao || '';
+  document.getElementById('modal-produto-detalhes').textContent = produto.detalhes || '';
+  document.getElementById('modal-produto-valor').textContent = formatarPreco(produto.valor);
 
-  categoriaAtivaId = id;
-  if (atualizarHash) history.replaceState(null, '', `#${id}`);
+  const containerTags = document.getElementById('modal-produto-tags');
+  containerTags.innerHTML = (produto.tags || [])
+    .filter((chave) => ICONES_TAGS[chave])
+    .map((chave) => `<span class="chip-tag">${ICONES_TAGS[chave].svg}${escapeTexto(ICONES_TAGS[chave].rotulo)}</span>`)
+    .join('');
 
-  document.getElementById('painel-categoria')?.scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' });
-  window.scrollTo({ top: 0, behavior: 'auto' });
+  const linkWhats = document.getElementById('modal-produto-whatsapp');
+  if (ESTABELECIMENTO?.contato?.whatsapp) {
+    const mensagem = encodeURIComponent(`Olá! Gostaria de pedir: ${produto.nome}${produto.codigo ? ` (#${produto.codigo})` : ''}.`);
+    linkWhats.href = `https://wa.me/${ESTABELECIMENTO.contato.whatsapp}?text=${mensagem}`;
+    linkWhats.hidden = false;
+  } else {
+    linkWhats.hidden = true;
+  }
+
+  document.getElementById('produto-overlay').hidden = false;
+  document.body.style.overflow = 'hidden';
+  document.getElementById('botao-fechar-produto').focus();
+}
+
+function fecharModalProduto() {
+  document.getElementById('produto-overlay').hidden = true;
+  document.body.style.overflow = '';
 }
 
 /* ---------------------------------------------------------
-   ÍNDICE DE BUSCA (achatado, sem acentos, com referência à categoria)
+   ÍNDICE DE BUSCA
 --------------------------------------------------------- */
 function construirIndiceBusca(categorias) {
   INDICE_BUSCA = [];
@@ -204,9 +382,10 @@ function construirIndiceBusca(categorias) {
         categoriaId: categoria.id,
         categoriaNome: categoria.nome,
         nome: produto.nome,
-        descricao: produto.descricao || '',
+        codigo: produto.codigo || '',
         valor: produto.valor,
-        chaveBusca: removerAcentos(`${produto.nome} ${produto.descricao || ''}`).toLowerCase()
+        imagem: produto.imagem || categoria.imagem,
+        chaveBusca: removerAcentos(`${produto.codigo || ''} ${produto.nome} ${produto.descricao || ''}`).toLowerCase()
       });
     });
   });
@@ -217,86 +396,78 @@ function removerAcentos(texto) {
 }
 
 /* ---------------------------------------------------------
-   BUSCA — campo, dropdown de resultados e redirecionamento
+   BUSCA EM OVERLAY — abre, filtra e redireciona até o item
 --------------------------------------------------------- */
 function configurarBusca() {
+  const overlay = document.getElementById('busca-overlay');
   const campo = document.getElementById('campo-busca');
-  const botaoLimpar = document.getElementById('busca-limpar');
   const painelResultados = document.getElementById('busca-resultados');
-  const wrapper = document.getElementById('busca-wrapper');
+
+  document.getElementById('botao-abrir-busca').addEventListener('click', abrirBusca);
+  document.getElementById('botao-abrir-busca-mobile').addEventListener('click', abrirBusca);
+  document.getElementById('botao-fechar-busca').addEventListener('click', fecharBusca);
+
+  overlay.addEventListener('click', (evento) => {
+    if (evento.target === overlay) fecharBusca();
+  });
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape' && !overlay.hidden) fecharBusca();
+  });
 
   campo.addEventListener('input', () => {
     const termo = campo.value.trim();
-    botaoLimpar.hidden = termo.length === 0;
-
     if (termo.length === 0) {
-      fecharResultadosBusca();
+      painelResultados.innerHTML = '';
       return;
     }
     const termoNormalizado = removerAcentos(termo).toLowerCase();
-    const encontrados = INDICE_BUSCA.filter((p) => p.chaveBusca.includes(termoNormalizado)).slice(0, 8);
+    const encontrados = INDICE_BUSCA.filter((p) => p.chaveBusca.includes(termoNormalizado)).slice(0, 10);
     renderizarResultadosBusca(encontrados, termo);
   });
 
-  campo.addEventListener('keydown', (evento) => {
-    if (evento.key === 'Escape') {
-      fecharResultadosBusca();
-      campo.blur();
-    }
-  });
-
-  botaoLimpar.addEventListener('click', () => {
+  function abrirBusca() {
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
     campo.value = '';
-    botaoLimpar.hidden = true;
-    fecharResultadosBusca();
-    campo.focus();
-  });
-
-  document.addEventListener('click', (evento) => {
-    if (!wrapper.contains(evento.target)) fecharResultadosBusca();
-  });
-
-  function fecharResultadosBusca() {
-    painelResultados.hidden = true;
     painelResultados.innerHTML = '';
-    campo.setAttribute('aria-expanded', 'false');
+    setTimeout(() => campo.focus(), 30);
+  }
+
+  function fecharBusca() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
   }
 
   function renderizarResultadosBusca(resultados, termoOriginal) {
-    painelResultados.innerHTML = '';
-
     if (resultados.length === 0) {
       painelResultados.innerHTML = `<p class="busca__vazio">Nenhum item encontrado para "${escapeTexto(termoOriginal)}".</p>`;
-      painelResultados.hidden = false;
-      campo.setAttribute('aria-expanded', 'true');
       return;
     }
 
+    painelResultados.innerHTML = '';
     const frag = document.createDocumentFragment();
     resultados.forEach((resultado) => {
       const botao = document.createElement('button');
       botao.type = 'button';
       botao.className = 'busca__resultado';
-      botao.setAttribute('role', 'option');
       botao.innerHTML = `
+        <img class="busca__resultado-miniatura" src="${escapeAtributo(resultado.imagem)}" alt="" loading="lazy">
         <span class="busca__resultado-texto">
-          <span class="busca__resultado-nome">${destacarTermo(resultado.nome, termoOriginal)}</span>
+          <span class="busca__resultado-cabecalho">
+            ${resultado.codigo ? `<span class="busca__resultado-codigo">#${escapeTexto(resultado.codigo)}</span>` : ''}
+            <span class="busca__resultado-nome">${destacarTermo(resultado.nome, termoOriginal)}</span>
+          </span>
           <span class="busca__resultado-categoria">${escapeTexto(resultado.categoriaNome)}</span>
         </span>
         <span class="busca__resultado-valor">${formatarPreco(resultado.valor)}</span>
       `;
       botao.addEventListener('click', () => {
+        fecharBusca();
         irParaResultado(resultado);
-        campo.value = '';
-        botaoLimpar.hidden = true;
-        fecharResultadosBusca();
       });
       frag.appendChild(botao);
     });
-
     painelResultados.appendChild(frag);
-    painelResultados.hidden = false;
-    campo.setAttribute('aria-expanded', 'true');
   }
 }
 
@@ -314,17 +485,16 @@ function destacarTermo(texto, termo) {
   return `${antes}<mark>${meio}</mark>${depois}`;
 }
 
-// Troca para a categoria do resultado e rola/realça o produto encontrado
+// Troca para a categoria do resultado e rola/realça o item encontrado na lista
 function irParaResultado(resultado) {
-  ativarCategoria(resultado.categoriaId);
+  selecionarCategoria(resultado.categoriaId);
 
   requestAnimationFrame(() => {
     const elemento = document.getElementById(`produto-${resultado.idProduto}`);
     if (!elemento) return;
     elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
     elemento.classList.remove('is-encontrado');
-    // força reflow para reiniciar a animação mesmo em cliques repetidos
-    void elemento.offsetWidth;
+    void elemento.offsetWidth; // reinicia a animação mesmo em buscas repetidas
     elemento.classList.add('is-encontrado');
     setTimeout(() => elemento.classList.remove('is-encontrado'), 1900);
   });
@@ -356,10 +526,6 @@ function renderizarFooter(estabelecimento) {
   linkTel.textContent = `Telefone: ${telefone}`;
   linkTel.href = `tel:${telefone.replace(/\D/g, '')}`;
 
-  const botaoWhats = document.getElementById('botao-whatsapp');
-  botaoWhats.href = `https://wa.me/${whatsapp}`;
-  botaoWhats.hidden = false;
-
   const containerRedes = document.getElementById('footer-redes');
   (estabelecimento.redesSociais || []).forEach((rede) => {
     const a = document.createElement('a');
@@ -379,7 +545,7 @@ function renderizarFooter(estabelecimento) {
    ESTADO DE ERRO
 --------------------------------------------------------- */
 function renderizarErro() {
-  const painel = document.getElementById('painel-categoria');
+  const painel = document.getElementById('painel-categoria') || document.getElementById('conteudo');
   painel.innerHTML = `
     <div class="estado-erro" role="alert">
       <p>Não foi possível carregar o cardápio agora.</p>

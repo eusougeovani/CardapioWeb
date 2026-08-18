@@ -19,75 +19,148 @@
 </head>
 <body>
 
-<a class="skip-link" href="#painel-categoria">Pular para o cardápio</a>
+<a class="skip-link" href="#conteudo">Pular para o cardápio</a>
 
 <div class="app">
 
-<div class="cabecalho-fixo">
-  <!-- TOPBAR: logo + nome + busca -->
+  <!-- TOPBAR -->
   <header class="topbar">
-    <div class="topbar__marca">
-      <img class="topbar__logo" id="logo-estabelecimento" src="" alt="" width="40" height="40">
-      <div class="topbar__nome-bloco">
-        <h1 class="topbar__nome" id="nome-estabelecimento">Carregando…</h1>
-        <p class="topbar__tagline" id="tagline-estabelecimento"></p>
-      </div>
-    </div>
+    <button type="button" class="topbar__marca" id="botao-ir-inicio" aria-label="Ir para a página inicial">
+      <img class="topbar__logo" id="logo-estabelecimento" src="" alt="" width="36" height="36">
+      <span class="topbar__nome-bloco">
+        <span class="topbar__nome" id="nome-estabelecimento">Carregando…</span>
+        <span class="topbar__tagline" id="tagline-estabelecimento"></span>
+      </span>
+    </button>
 
-    <div class="busca" id="busca-wrapper">
-      <svg class="busca__icone" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
-      </svg>
-      <input
-        type="search"
-        id="campo-busca"
-        class="busca__campo"
-        placeholder="Buscar no cardápio…"
-        autocomplete="off"
-        role="combobox"
-        aria-expanded="false"
-        aria-controls="busca-resultados"
-        aria-label="Buscar item no cardápio">
-      <button type="button" class="busca__limpar" id="busca-limpar" hidden aria-label="Limpar busca">×</button>
+    <nav class="topbar__nav-desktop" aria-label="Navegação principal">
+      <button type="button" class="topbar__link" data-vista="inicio">Início</button>
+      <button type="button" class="topbar__link" data-vista="categorias">Categorias</button>
+    </nav>
 
-      <div class="busca__painel" id="busca-resultados" role="listbox" hidden></div>
+    <div class="topbar__acoes">
+      <button type="button" class="botao-icone" id="botao-abrir-busca" aria-label="Buscar no cardápio" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+      </button>
+      <a class="botao-avaliar botao-avaliar--desktop" id="link-avaliar-desktop" href="#" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2.5 14.9 8.6l6.7.9-4.9 4.6 1.3 6.6L12 17.7l-5.9 3 1.3-6.6-4.9-4.6 6.7-.9L12 2.5Z"/></svg>
+        <span>Avaliar</span>
+      </a>
     </div>
   </header>
 
-  <!-- TABS (mobile) / conteúdo do nav lateral (desktop) -->
-  <nav class="nav-categorias" id="nav-categorias" aria-label="Categorias do cardápio">
-    <div class="nav-categorias__lista" id="nav-categorias-lista">
-      <!-- itens injetados via JS -->
-    </div>
+  <!-- CONTEÚDO -->
+  <main id="conteudo">
+
+    <!-- VISTA: INÍCIO (capa do cardápio) -->
+    <section class="vista-inicio" id="vista-inicio">
+      <div class="vista-inicio__cartao">
+        <img class="vista-inicio__logo" id="capa-logo" src="" alt="" width="88" height="88">
+        <h1 class="vista-inicio__nome" id="capa-nome">Carregando…</h1>
+        <p class="vista-inicio__tagline" id="capa-tagline"></p>
+
+        <button type="button" class="botao-primario" id="botao-ver-cardapio">Ver cardápio</button>
+
+        <div class="vista-inicio__info">
+          <p id="capa-endereco"></p>
+          <p id="capa-horario"></p>
+        </div>
+
+        <div class="vista-inicio__atalhos" id="capa-atalhos" aria-label="Atalhos de categoria">
+          <!-- chips de categoria injetados via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VISTA: CARDÁPIO (grade de categorias + painel de produtos) -->
+    <section class="vista-cardapio" id="vista-cardapio" hidden>
+
+      <div class="corpo">
+        <aside class="sidebar" aria-label="Navegação de categorias">
+          <button type="button" class="sidebar__inicio" id="sidebar-inicio">← Início</button>
+          <p class="sidebar__rotulo">Categorias</p>
+          <div class="sidebar__lista" id="sidebar-lista"></div>
+        </aside>
+
+        <div class="painel" id="painel-categoria">
+
+          <!-- Grade de categorias (visão geral, mobile e desktop na entrada) -->
+          <div class="grade-categorias" id="grade-categorias">
+            <p class="grade-categorias__titulo">O que você procura hoje?</p>
+            <div class="grade-categorias__lista" id="grade-categorias-lista"></div>
+          </div>
+
+          <div class="estado-carregando" id="estado-carregando" role="status">
+            <span class="estado-carregando__spinner" aria-hidden="true"></span>
+            <p>Preparando o cardápio…</p>
+          </div>
+          <!-- painéis de categoria injetados via JS -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav" aria-label="Navegação principal">
+    <button type="button" class="bottom-nav__item" data-vista="inicio">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h5v-5h2v5h5v-9"/></svg>
+      <span>Início</span>
+    </button>
+    <button type="button" class="bottom-nav__item" data-vista="categorias">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.3"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.3"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.3"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.3"/></svg>
+      <span>Categorias</span>
+    </button>
+    <button type="button" class="bottom-nav__item" id="botao-abrir-busca-mobile">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span>Buscar</span>
+    </button>
+    <a class="bottom-nav__item" id="link-avaliar-mobile" href="#" target="_blank" rel="noopener" hidden>
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 2.5 14.9 8.6l6.7.9-4.9 4.6 1.3 6.6L12 17.7l-5.9 3 1.3-6.6-4.9-4.6 6.7-.9L12 2.5Z"/></svg>
+      <span>Avaliar</span>
+    </a>
   </nav>
-</div>
 
-  <!-- CORPO: sidebar (desktop) + painel de categoria ativa -->
-  <div class="corpo">
-    <aside class="sidebar" aria-label="Navegação de categorias">
-      <p class="sidebar__rotulo">Categorias</p>
-      <div class="sidebar__lista" id="sidebar-lista">
-        <!-- itens injetados via JS -->
+  <!-- OVERLAY DE BUSCA -->
+  <div class="busca-overlay" id="busca-overlay" hidden>
+    <div class="busca-overlay__painel" role="dialog" aria-modal="true" aria-label="Buscar no cardápio">
+      <div class="busca-overlay__campo-linha">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" class="busca-overlay__icone"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input
+          type="search"
+          id="campo-busca"
+          class="busca-overlay__campo"
+          placeholder="Buscar por nome, código ou descrição…"
+          autocomplete="off">
+        <button type="button" class="botao-icone" id="botao-fechar-busca" aria-label="Fechar busca">×</button>
       </div>
-    </aside>
+      <div class="busca-overlay__resultados" id="busca-resultados"></div>
+    </div>
+  </div>
 
-    <main id="painel-categoria" class="painel">
-      <div class="estado-carregando" id="estado-carregando" role="status">
-        <span class="estado-carregando__spinner" aria-hidden="true"></span>
-        <p>Preparando o cardápio…</p>
+  <!-- MODAL DE PRODUTO -->
+  <div class="produto-overlay" id="produto-overlay" hidden>
+    <div class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="modal-produto-nome">
+      <button type="button" class="produto-modal__fechar" id="botao-fechar-produto" aria-label="Fechar">×</button>
+      <img class="produto-modal__imagem" id="modal-produto-imagem" src="" alt="">
+      <div class="produto-modal__corpo">
+        <span class="produto-modal__codigo" id="modal-produto-codigo"></span>
+        <h2 class="produto-modal__nome" id="modal-produto-nome"></h2>
+        <div class="produto-modal__tags" id="modal-produto-tags"></div>
+        <p class="produto-modal__descricao" id="modal-produto-descricao"></p>
+        <p class="produto-modal__detalhes" id="modal-produto-detalhes"></p>
+        <div class="produto-modal__rodape">
+          <span class="produto-modal__valor" id="modal-produto-valor"></span>
+          <a class="botao-primario botao-primario--pequeno" id="modal-produto-whatsapp" href="#" target="_blank" rel="noopener">Pedir no WhatsApp</a>
+        </div>
       </div>
-      <!-- painéis de categoria injetados via JS -->
-    </main>
+    </div>
   </div>
 
 </div>
-
-<!-- BOTÃO WHATSAPP FLUTUANTE -->
-<a id="botao-whatsapp" class="botao-whatsapp" href="#" target="_blank" rel="noopener" aria-label="Chamar no WhatsApp" hidden>
-  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
-    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.44 1.32 4.94L2.05 22l5.28-1.38a9.87 9.87 0 0 0 4.7 1.2h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.8 14.07c-.24.68-1.4 1.3-1.93 1.37-.5.08-1.12.11-1.81-.11-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.15-4.9-4.34-.14-.19-1.17-1.56-1.17-2.98s.75-2.12 1.02-2.41c.26-.28.57-.36.76-.36l.54.01c.17.01.41-.06.64.49.24.57.81 1.98.88 2.12.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.14-.28.28-.12.56.16.28.71 1.17 1.52 1.9 1.05.94 1.93 1.23 2.21 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.19-.28.37-.23.63-.14.26.09 1.66.78 1.94.93.28.14.47.21.53.33.07.12.07.68-.17 1.36z"/>
-  </svg>
-</a>
 
 <!-- FOOTER -->
 <footer class="footer" id="footer">
