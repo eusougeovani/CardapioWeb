@@ -39,38 +39,38 @@
     </nav>
 
     <div class="topbar__acoes">
-      <button type="button" class="botao-icone" id="botao-abrir-busca" aria-label="Buscar no cardápio" aria-haspopup="dialog">
+      <button type="button" class="botao-icone acao-desktop" id="botao-abrir-busca" aria-label="Buscar no cardápio" aria-haspopup="dialog">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
           <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
         </svg>
       </button>
-      <a class="botao-avaliar botao-avaliar--desktop" id="link-avaliar-desktop" href="#" target="_blank" rel="noopener" hidden>
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2.5 14.9 8.6l6.7.9-4.9 4.6 1.3 6.6L12 17.7l-5.9 3 1.3-6.6-4.9-4.6 6.7-.9L12 2.5Z"/></svg>
-        <span>Avaliar</span>
-      </a>
+      <button type="button" class="botao-avaliar acao-desktop" id="botao-informacoes-desktop" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 8v.01"/></svg>
+        <span>Informações</span>
+      </button>
     </div>
   </header>
 
   <!-- CONTEÚDO -->
   <main id="conteudo">
 
-    <!-- VISTA: INÍCIO (capa do cardápio) -->
+    <!-- VISTA: INÍCIO (capa do cardápio, tela única) -->
     <section class="vista-inicio" id="vista-inicio">
-      <div class="vista-inicio__cartao">
-        <img class="vista-inicio__logo" id="capa-logo" src="" alt="" width="88" height="88">
+      <div class="vista-inicio__topo">
+        <img class="vista-inicio__logo" id="capa-logo" src="" alt="" width="72" height="72">
         <h1 class="vista-inicio__nome" id="capa-nome">Carregando…</h1>
         <p class="vista-inicio__tagline" id="capa-tagline"></p>
-
         <button type="button" class="botao-primario" id="botao-ver-cardapio">Ver cardápio</button>
+      </div>
 
-        <div class="vista-inicio__info">
-          <p id="capa-endereco"></p>
-          <p id="capa-horario"></p>
-        </div>
+      <div class="carrossel-secao" id="secao-pratos-dia" hidden>
+        <p class="carrossel-secao__titulo">Pratos do dia</p>
+        <div class="carrossel-lista" id="carrossel-pratos-dia"></div>
+      </div>
 
-        <div class="vista-inicio__atalhos" id="capa-atalhos" aria-label="Atalhos de categoria">
-          <!-- chips de categoria injetados via JS -->
-        </div>
+      <div class="carrossel-secao" id="secao-mais-pedidos" hidden>
+        <p class="carrossel-secao__titulo">Mais pedidos</p>
+        <div class="carrossel-lista" id="carrossel-mais-pedidos"></div>
       </div>
     </section>
 
@@ -86,7 +86,6 @@
 
         <div class="painel" id="painel-categoria">
 
-          <!-- Grade de categorias (visão geral, mobile e desktop na entrada) -->
           <div class="grade-categorias" id="grade-categorias">
             <p class="grade-categorias__titulo">O que você procura hoje?</p>
             <div class="grade-categorias__lista" id="grade-categorias-lista"></div>
@@ -118,13 +117,13 @@
       <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <span>Buscar</span>
     </button>
-    <a class="bottom-nav__item" id="link-avaliar-mobile" href="#" target="_blank" rel="noopener" hidden>
-      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 2.5 14.9 8.6l6.7.9-4.9 4.6 1.3 6.6L12 17.7l-5.9 3 1.3-6.6-4.9-4.6 6.7-.9L12 2.5Z"/></svg>
-      <span>Avaliar</span>
-    </a>
+    <button type="button" class="bottom-nav__item" id="botao-informacoes-mobile">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 8v.01"/></svg>
+      <span>Informações</span>
+    </button>
   </nav>
 
-  <!-- OVERLAY DE BUSCA -->
+  <!-- OVERLAY DE BUSCA (área dedicada, em branco até o cliente digitar) -->
   <div class="busca-overlay" id="busca-overlay" hidden>
     <div class="busca-overlay__painel" role="dialog" aria-modal="true" aria-label="Buscar no cardápio">
       <div class="busca-overlay__campo-linha">
@@ -137,7 +136,9 @@
           autocomplete="off">
         <button type="button" class="botao-icone" id="botao-fechar-busca" aria-label="Fechar busca">×</button>
       </div>
-      <div class="busca-overlay__resultados" id="busca-resultados"></div>
+      <div class="busca-overlay__resultados" id="busca-resultados">
+        <p class="busca__vazio busca__vazio--inicial">Digite para encontrar um item do cardápio.</p>
+      </div>
     </div>
   </div>
 
@@ -160,33 +161,45 @@
     </div>
   </div>
 
-</div>
+  <!-- OVERLAY DE INFORMAÇÕES DO ESTABELECIMENTO -->
+  <div class="info-overlay" id="info-overlay" hidden>
+    <div class="info-painel" role="dialog" aria-modal="true" aria-label="Informações do estabelecimento">
+      <button type="button" class="produto-modal__fechar" id="botao-fechar-info" aria-label="Fechar">×</button>
 
-<!-- FOOTER -->
-<footer class="footer" id="footer">
-  <div class="footer__inner">
+      <div class="info-painel__cabecalho">
+        <img class="info-painel__logo" id="info-logo" src="" alt="">
+        <div>
+          <h2 class="info-painel__nome" id="info-nome"></h2>
+          <p class="info-painel__tagline" id="info-tagline"></p>
+        </div>
+      </div>
 
-    <section class="footer__bloco" aria-labelledby="titulo-pagamentos">
-      <h2 id="titulo-pagamentos" class="footer__titulo">Formas de pagamento</h2>
-      <ul class="footer__pagamentos" id="lista-pagamentos"></ul>
-    </section>
+      <a class="botao-primario info-painel__avaliar" id="info-link-avaliar" href="#" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2.5 14.9 8.6l6.7.9-4.9 4.6 1.3 6.6L12 17.7l-5.9 3 1.3-6.6-4.9-4.6 6.7-.9L12 2.5Z"/></svg>
+        <span>Avaliar estabelecimento</span>
+      </a>
 
-    <section class="footer__bloco" aria-labelledby="titulo-endereco">
-      <h2 id="titulo-endereco" class="footer__titulo">Endereço &amp; horário</h2>
-      <p class="footer__texto" id="footer-endereco"></p>
-      <p class="footer__texto footer__texto--muted" id="footer-horario"></p>
-    </section>
+      <section class="info-painel__bloco">
+        <h3 class="info-painel__titulo">Endereço &amp; horário</h3>
+        <p class="info-painel__texto" id="info-endereco"></p>
+        <p class="info-painel__texto info-painel__texto--muted" id="info-horario"></p>
+      </section>
 
-    <section class="footer__bloco" aria-labelledby="titulo-contato">
-      <h2 id="titulo-contato" class="footer__titulo">Contato</h2>
-      <p class="footer__texto"><a id="footer-whatsapp" class="footer__link" href="#">WhatsApp</a></p>
-      <p class="footer__texto"><a id="footer-telefone" class="footer__link" href="#">Telefone</a></p>
-      <div class="footer__redes" id="footer-redes"></div>
-    </section>
+      <section class="info-painel__bloco">
+        <h3 class="info-painel__titulo">Contato</h3>
+        <p class="info-painel__texto"><a class="info-painel__link" id="info-whatsapp" href="#" target="_blank" rel="noopener"></a></p>
+        <p class="info-painel__texto"><a class="info-painel__link" id="info-telefone" href="#"></a></p>
+        <div class="info-painel__redes" id="info-redes"></div>
+      </section>
 
+      <section class="info-painel__bloco">
+        <h3 class="info-painel__titulo">Formas de pagamento</h3>
+        <ul class="info-painel__pagamentos" id="info-pagamentos"></ul>
+      </section>
+    </div>
   </div>
-  <p class="footer__assinatura">Cardápio digital &middot; <span id="footer-ano"></span></p>
-</footer>
+
+</div>
 
 <script src="script.js"></script>
 </body>

@@ -12,14 +12,34 @@
       "telefone": "(11) 3456-7890"
     },
     "redesSociais": [
-      { "nome": "Instagram", "url": "https://instagram.com/torrefacaonomade", "icone": "instagram" },
-      { "nome": "Facebook", "url": "https://facebook.com/torrefacaonomade", "icone": "facebook" }
+      {
+        "nome": "Instagram",
+        "url": "https://instagram.com/torrefacaonomade",
+        "icone": "instagram"
+      },
+      {
+        "nome": "Facebook",
+        "url": "https://facebook.com/torrefacaonomade",
+        "icone": "facebook"
+      }
     ],
     "formasPagamento": [
-      { "nome": "Pix", "icone": "pix" },
-      { "nome": "Crédito", "icone": "cartao" },
-      { "nome": "Débito", "icone": "cartao" },
-      { "nome": "Dinheiro", "icone": "dinheiro" }
+      {
+        "nome": "Pix",
+        "icone": "pix"
+      },
+      {
+        "nome": "Crédito",
+        "icone": "cartao"
+      },
+      {
+        "nome": "Débito",
+        "icone": "cartao"
+      },
+      {
+        "nome": "Dinheiro",
+        "icone": "dinheiro"
+      }
     ]
   },
   "categorias": [
@@ -36,7 +56,11 @@
           "detalhes": "Dose dupla extraída em 25 segundos, blend próprio com grãos do Sul de Minas e Cerrado Mineiro.",
           "valor": 9.5,
           "imagem": "assets/produtos/espresso-duplo.svg",
-          "tags": ["cafeina", "vegano"]
+          "tags": [
+            "cafeina",
+            "vegano"
+          ],
+          "maisPedido": true
         },
         {
           "codigo": "C02",
@@ -45,8 +69,12 @@
           "detalhes": "Método filtrado feito na hora, grão de origem única rotativa — pergunte ao barista qual está em safra.",
           "valor": 16.0,
           "imagem": "assets/produtos/filtrado-v60.svg",
-          "tags": ["cafeina", "vegano"],
-          "destaque": true
+          "tags": [
+            "cafeina",
+            "vegano"
+          ],
+          "destaque": true,
+          "pratoDoDia": true
         },
         {
           "codigo": "C03",
@@ -54,7 +82,10 @@
           "descricao": "Espresso, leite vaporizado e canela em pó",
           "valor": 14.0,
           "imagem": "assets/produtos/cappuccino.svg",
-          "tags": ["cafeina", "vegetariano"]
+          "tags": [
+            "cafeina",
+            "vegetariano"
+          ]
         },
         {
           "codigo": "C04",
@@ -62,7 +93,10 @@
           "descricao": "Dose dupla de espresso com microespuma de leite",
           "valor": 15.5,
           "imagem": "assets/produtos/flat-white.svg",
-          "tags": ["cafeina", "vegetariano"]
+          "tags": [
+            "cafeina",
+            "vegetariano"
+          ]
         },
         {
           "codigo": "C05",
@@ -71,7 +105,10 @@
           "detalhes": "Infusão a frio por 18 horas, servida na torneira com nitrogênio para textura cremosa sem leite.",
           "valor": 18.0,
           "imagem": "assets/produtos/nitro.svg",
-          "tags": ["cafeina", "vegano"]
+          "tags": [
+            "cafeina",
+            "vegano"
+          ]
         }
       ]
     },
@@ -88,8 +125,11 @@
           "detalhes": "48 horas de fermentação e laminação, manteiga francesa 82% de gordura.",
           "valor": 13.0,
           "imagem": "assets/produtos/croissant.svg",
-          "tags": ["vegetariano"],
-          "destaque": true
+          "tags": [
+            "vegetariano"
+          ],
+          "destaque": true,
+          "maisPedido": true
         },
         {
           "codigo": "P02",
@@ -97,7 +137,9 @@
           "descricao": "Fatia com manteiga de garrafa e flor de sal",
           "valor": 11.0,
           "imagem": "assets/produtos/pao-fermentacao.svg",
-          "tags": ["vegano"]
+          "tags": [
+            "vegano"
+          ]
         },
         {
           "codigo": "P03",
@@ -105,7 +147,9 @@
           "descricao": "Ervas frescas, azeite extravirgem e sal grosso",
           "valor": 12.5,
           "imagem": "assets/produtos/focaccia.svg",
-          "tags": ["vegano"]
+          "tags": [
+            "vegano"
+          ]
         },
         {
           "codigo": "P04",
@@ -113,7 +157,10 @@
           "descricao": "Servido com geleia da casa e chantilly de baunilha",
           "valor": 14.5,
           "imagem": "assets/produtos/scone.svg",
-          "tags": ["vegetariano", "doce"]
+          "tags": [
+            "vegetariano",
+            "doce"
+          ]
         }
       ]
     },
@@ -129,8 +176,11 @@
           "descricao": "Muffin inglês, ovo pochê, presunto cru e molho holandês",
           "valor": 32.0,
           "imagem": "assets/produtos/ovos-beneditinos.svg",
-          "tags": ["vegetariano"],
-          "destaque": true
+          "tags": [
+            "vegetariano"
+          ],
+          "destaque": true,
+          "pratoDoDia": true
         },
         {
           "codigo": "R02",
@@ -139,7 +189,9 @@
           "detalhes": "Seleção de 3 queijos e 2 embutidos nacionais, geleia artesanal da casa e torradas de fermentação natural. Serve bem 2 pessoas.",
           "valor": 48.0,
           "imagem": "assets/produtos/tabua-frios.svg",
-          "tags": ["salgado"]
+          "tags": [
+            "salgado"
+          ]
         },
         {
           "codigo": "R03",
@@ -147,7 +199,10 @@
           "descricao": "Pastrami defumado, mostarda dijon e picles no pão de centeio",
           "valor": 34.0,
           "imagem": "assets/produtos/pastrami.svg",
-          "tags": ["salgado"]
+          "tags": [
+            "salgado"
+          ],
+          "maisPedido": true
         },
         {
           "codigo": "R04",
@@ -155,7 +210,10 @@
           "descricao": "Quinoa, grão-de-bico, legumes assados e vinagrete de limão",
           "valor": 29.0,
           "imagem": "assets/produtos/salada-graos.svg",
-          "tags": ["vegano", "semGluten"]
+          "tags": [
+            "vegano",
+            "semGluten"
+          ]
         },
         {
           "codigo": "R05",
@@ -163,7 +221,10 @@
           "descricao": "Ervas frescas do jardim, queijo coalho e torrada rústica",
           "valor": 27.0,
           "imagem": "assets/produtos/omelete.svg",
-          "tags": ["vegetariano", "semGluten"]
+          "tags": [
+            "vegetariano",
+            "semGluten"
+          ]
         }
       ]
     },
@@ -179,7 +240,10 @@
           "descricao": "Fatia generosa, cobertura de ganache 70%",
           "valor": 16.0,
           "imagem": "assets/produtos/bolo-cenoura.svg",
-          "tags": ["vegetariano", "doce"]
+          "tags": [
+            "vegetariano",
+            "doce"
+          ]
         },
         {
           "codigo": "D02",
@@ -187,8 +251,12 @@
           "descricao": "Base amanteigada, calda artesanal da estação",
           "valor": 19.0,
           "imagem": "assets/produtos/cheesecake.svg",
-          "tags": ["vegetariano", "doce"],
-          "destaque": true
+          "tags": [
+            "vegetariano",
+            "doce"
+          ],
+          "destaque": true,
+          "maisPedido": true
         },
         {
           "codigo": "D03",
@@ -196,7 +264,10 @@
           "descricao": "Brownie de chocolate 60%, bola de sorvete de creme",
           "valor": 21.0,
           "imagem": "assets/produtos/brownie.svg",
-          "tags": ["vegetariano", "doce"]
+          "tags": [
+            "vegetariano",
+            "doce"
+          ]
         },
         {
           "codigo": "D04",
@@ -204,7 +275,11 @@
           "descricao": "Merengue maçaricado e crumble de castanhas",
           "valor": 18.5,
           "imagem": "assets/produtos/torta-limao.svg",
-          "tags": ["vegetariano", "doce"]
+          "tags": [
+            "vegetariano",
+            "doce"
+          ],
+          "pratoDoDia": true
         }
       ]
     }

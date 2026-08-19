@@ -1,8 +1,10 @@
 /**
  * Cardápio Digital — script.js
  * Fetch do config.json + renderização dinâmica.
- * Arquitetura: capa/Início, grade de categorias, painel de produtos
- * por categoria, modal de produto e busca em overlay com redirecionamento.
+ * Início é tela única: apresentação + carrosséis de "Pratos do dia" e
+ * "Mais pedidos" (definidos via tags no config.json). Categorias, busca
+ * (área dedicada) e Informações do estabelecimento vivem em views/overlays
+ * próprios, sem depender de rolagem na tela inicial.
  */
 
 const CONFIG_URL = 'config.json';
@@ -18,43 +20,20 @@ const ICONES = {
 
 // Vocabulário de selos/símbolos do produto: ícone + rótulo em pt-BR.
 const ICONES_TAGS = {
-  vegano: {
-    rotulo: 'Vegano',
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 20c8-1 12-6 13-14-8 1-13 5-13 14Z"/><path d="M6 19c2-3 4-6 9-11"/></svg>'
-  },
-  vegetariano: {
-    rotulo: 'Vegetariano',
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M8 13c0-3 1.8-5 4-5s4 2 4 5-1.8 4-4 4-4-1-4-4Z"/></svg>'
-  },
-  cafeina: {
-    rotulo: 'Contém cafeína',
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z"/><path d="M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3.5c0 1-1.2 1.2-1.2 2.2S8 7 8 8M12 3.5c0 1-1.2 1.2-1.2 2.2S12 7 12 8"/></svg>'
-  },
-  semGluten: {
-    rotulo: 'Sem glúten',
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c1 3-2 4-2 7s3 4 2 7"/><path d="M12 3c-1 3 2 4 2 7s-3 4-2 7"/><path d="m4 4 16 16"/></svg>'
-  },
-  semLactose: {
-    rotulo: 'Sem lactose',
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 2h6v3.5L17 9v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l2-3.5V2Z"/><path d="m4 4 16 16"/></svg>'
-  },
-  apimentado: {
-    rotulo: 'Apimentado',
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 10c-1.5 1.5-2 6 1 8.5 3 2.4 8 .8 9.5-2.5 1.3-3-1-5-2.5-4.5"/><path d="M8 9c2-3.5 5.5-5.5 9-5-1 2-.5 3.5.5 4-3 1-6.5.5-9.5 1Z"/></svg>'
-  },
-  doce: {
-    rotulo: 'Doce',
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v3M12 19v3M4.5 4.5l2 2M17.5 17.5l2 2M4.5 19.5l2-2M17.5 6.5l2-2"/><circle cx="12" cy="12" r="5"/></svg>'
-  },
-  salgado: {
-    rotulo: 'Salgado',
-    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="9" rx="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'
-  }
+  vegano: { rotulo: 'Vegano', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 20c8-1 12-6 13-14-8 1-13 5-13 14Z"/><path d="M6 19c2-3 4-6 9-11"/></svg>' },
+  vegetariano: { rotulo: 'Vegetariano', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M8 13c0-3 1.8-5 4-5s4 2 4 5-1.8 4-4 4-4-1-4-4Z"/></svg>' },
+  cafeina: { rotulo: 'Contém cafeína', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z"/><path d="M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3.5c0 1-1.2 1.2-1.2 2.2S8 7 8 8M12 3.5c0 1-1.2 1.2-1.2 2.2S12 7 12 8"/></svg>' },
+  semGluten: { rotulo: 'Sem glúten', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3c1 3-2 4-2 7s3 4 2 7"/><path d="M12 3c-1 3 2 4 2 7s-3 4-2 7"/><path d="m4 4 16 16"/></svg>' },
+  semLactose: { rotulo: 'Sem lactose', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 2h6v3.5L17 9v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l2-3.5V2Z"/><path d="m4 4 16 16"/></svg>' },
+  apimentado: { rotulo: 'Apimentado', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 10c-1.5 1.5-2 6 1 8.5 3 2.4 8 .8 9.5-2.5 1.3-3-1-5-2.5-4.5"/><path d="M8 9c2-3.5 5.5-5.5 9-5-1 2-.5 3.5.5 4-3 1-6.5.5-9.5 1Z"/></svg>' },
+  doce: { rotulo: 'Doce', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v3M12 19v3M4.5 4.5l2 2M17.5 17.5l2 2M4.5 19.5l2-2M17.5 6.5l2-2"/><circle cx="12" cy="12" r="5"/></svg>' },
+  salgado: { rotulo: 'Salgado', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="9" rx="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>' }
 };
 
 // Estado em memória
 let ESTABELECIMENTO = null;
 let CATEGORIAS = [];
+let PRODUTOS_ACHATADOS = []; // [{ categoria, produto, idProduto, imagem }]
 let INDICE_BUSCA = [];
 let categoriaAtivaId = null;
 
@@ -71,18 +50,21 @@ async function iniciarCardapio() {
 
     ESTABELECIMENTO = dados.estabelecimento;
     CATEGORIAS = dados.categorias;
+    PRODUTOS_ACHATADOS = achatarProdutos(CATEGORIAS);
 
     renderizarMarca(ESTABELECIMENTO);
-    renderizarCapa(ESTABELECIMENTO, CATEGORIAS);
-    construirIndiceBusca(CATEGORIAS);
+    renderizarCapa(ESTABELECIMENTO);
+    renderizarCarrosseis(PRODUTOS_ACHATADOS);
+    construirIndiceBusca(PRODUTOS_ACHATADOS);
     renderizarSidebar(CATEGORIAS);
     renderizarGradeCategorias(CATEGORIAS);
     renderizarPaineis(CATEGORIAS);
-    renderizarFooter(ESTABELECIMENTO);
+    preencherInformacoes(ESTABELECIMENTO);
 
     configurarNavegacaoPrincipal();
     configurarBusca();
     configurarModalProduto();
+    configurarInformacoes();
 
     aplicarRota(location.hash.replace('#', ''));
     window.addEventListener('hashchange', () => aplicarRota(location.hash.replace('#', '')));
@@ -90,6 +72,24 @@ async function iniciarCardapio() {
     console.error('Erro ao montar o cardápio:', erro);
     renderizarErro();
   }
+}
+
+/* ---------------------------------------------------------
+   ACHATAMENTO DE PRODUTOS — fonte única para busca e carrosséis
+--------------------------------------------------------- */
+function achatarProdutos(categorias) {
+  const lista = [];
+  categorias.forEach((categoria) => {
+    categoria.produtos.forEach((produto, i) => {
+      lista.push({
+        categoria,
+        produto,
+        idProduto: `${categoria.id}__${i}`,
+        imagem: produto.imagem || categoria.imagem
+      });
+    });
+  });
+  return lista;
 }
 
 /* ---------------------------------------------------------
@@ -102,36 +102,57 @@ function renderizarMarca(estabelecimento) {
   document.getElementById('nome-estabelecimento').textContent = estabelecimento.nome;
   document.getElementById('tagline-estabelecimento').textContent = estabelecimento.tagline || '';
   document.title = estabelecimento.nome;
-
-  if (estabelecimento.avaliacaoUrl) {
-    [document.getElementById('link-avaliar-desktop'), document.getElementById('link-avaliar-mobile')].forEach((link) => {
-      link.href = estabelecimento.avaliacaoUrl;
-      link.hidden = false;
-    });
-  }
 }
 
-function renderizarCapa(estabelecimento, categorias) {
+function renderizarCapa(estabelecimento) {
   document.getElementById('capa-logo').src = estabelecimento.logo;
   document.getElementById('capa-logo').alt = `Logo de ${estabelecimento.nome}`;
   document.getElementById('capa-nome').textContent = estabelecimento.nome;
   document.getElementById('capa-tagline').textContent = estabelecimento.tagline || '';
-  document.getElementById('capa-endereco').textContent = estabelecimento.endereco || '';
-  document.getElementById('capa-horario').textContent = estabelecimento.horario || '';
-
-  const atalhos = document.getElementById('capa-atalhos');
-  categorias.forEach((categoria) => {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'chip-atalho';
-    chip.textContent = categoria.nome;
-    chip.addEventListener('click', () => selecionarCategoria(categoria.id));
-    atalhos.appendChild(chip);
-  });
 }
 
 /* ---------------------------------------------------------
-   NAVEGAÇÃO PRINCIPAL — topbar, bottom nav e capa
+   CARROSSÉIS DE DESTAQUE (Pratos do dia / Mais pedidos)
+--------------------------------------------------------- */
+function renderizarCarrosseis(produtosAchatados) {
+  renderizarUmCarrossel(
+    'secao-pratos-dia', 'carrossel-pratos-dia',
+    produtosAchatados.filter((p) => p.produto.pratoDoDia)
+  );
+  renderizarUmCarrossel(
+    'secao-mais-pedidos', 'carrossel-mais-pedidos',
+    produtosAchatados.filter((p) => p.produto.maisPedido)
+  );
+}
+
+function renderizarUmCarrossel(idSecao, idLista, itens) {
+  const secao = document.getElementById(idSecao);
+  if (itens.length === 0) { secao.hidden = true; return; }
+
+  const lista = document.getElementById(idLista);
+  const frag = document.createDocumentFragment();
+
+  itens.forEach(({ categoria, produto, imagem }) => {
+    const cartao = document.createElement('button');
+    cartao.type = 'button';
+    cartao.className = 'cartao-carrossel';
+    cartao.innerHTML = `
+      <img class="cartao-carrossel__imagem" src="${escapeAtributo(imagem)}" alt="" loading="lazy">
+      <span class="cartao-carrossel__corpo">
+        <span class="cartao-carrossel__nome">${escapeTexto(produto.nome)}</span>
+        <span class="cartao-carrossel__valor">${formatarPreco(produto.valor)}</span>
+      </span>
+    `;
+    cartao.addEventListener('click', () => abrirModalProduto(produto, categoria.nome, categoria.imagem));
+    frag.appendChild(cartao);
+  });
+
+  lista.appendChild(frag);
+  secao.hidden = false;
+}
+
+/* ---------------------------------------------------------
+   NAVEGAÇÃO PRINCIPAL — topbar, bottom nav e CTA da capa
 --------------------------------------------------------- */
 function configurarNavegacaoPrincipal() {
   document.getElementById('botao-ir-inicio').addEventListener('click', irParaInicio);
@@ -373,22 +394,17 @@ function fecharModalProduto() {
 /* ---------------------------------------------------------
    ÍNDICE DE BUSCA
 --------------------------------------------------------- */
-function construirIndiceBusca(categorias) {
-  INDICE_BUSCA = [];
-  categorias.forEach((categoria) => {
-    categoria.produtos.forEach((produto, i) => {
-      INDICE_BUSCA.push({
-        idProduto: `${categoria.id}__${i}`,
-        categoriaId: categoria.id,
-        categoriaNome: categoria.nome,
-        nome: produto.nome,
-        codigo: produto.codigo || '',
-        valor: produto.valor,
-        imagem: produto.imagem || categoria.imagem,
-        chaveBusca: removerAcentos(`${produto.codigo || ''} ${produto.nome} ${produto.descricao || ''}`).toLowerCase()
-      });
-    });
-  });
+function construirIndiceBusca(produtosAchatados) {
+  INDICE_BUSCA = produtosAchatados.map(({ categoria, produto, idProduto, imagem }) => ({
+    idProduto,
+    categoriaId: categoria.id,
+    categoriaNome: categoria.nome,
+    nome: produto.nome,
+    codigo: produto.codigo || '',
+    valor: produto.valor,
+    imagem,
+    chaveBusca: removerAcentos(`${produto.codigo || ''} ${produto.nome} ${produto.descricao || ''}`).toLowerCase()
+  }));
 }
 
 function removerAcentos(texto) {
@@ -396,12 +412,13 @@ function removerAcentos(texto) {
 }
 
 /* ---------------------------------------------------------
-   BUSCA EM OVERLAY — abre, filtra e redireciona até o item
+   BUSCA EM ÁREA DEDICADA — abre em branco, filtra e redireciona até o item
 --------------------------------------------------------- */
 function configurarBusca() {
   const overlay = document.getElementById('busca-overlay');
   const campo = document.getElementById('campo-busca');
   const painelResultados = document.getElementById('busca-resultados');
+  const estadoInicialHTML = painelResultados.innerHTML;
 
   document.getElementById('botao-abrir-busca').addEventListener('click', abrirBusca);
   document.getElementById('botao-abrir-busca-mobile').addEventListener('click', abrirBusca);
@@ -417,7 +434,7 @@ function configurarBusca() {
   campo.addEventListener('input', () => {
     const termo = campo.value.trim();
     if (termo.length === 0) {
-      painelResultados.innerHTML = '';
+      painelResultados.innerHTML = estadoInicialHTML;
       return;
     }
     const termoNormalizado = removerAcentos(termo).toLowerCase();
@@ -429,7 +446,7 @@ function configurarBusca() {
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
     campo.value = '';
-    painelResultados.innerHTML = '';
+    painelResultados.innerHTML = estadoInicialHTML;
     setTimeout(() => campo.focus(), 30);
   }
 
@@ -501,35 +518,30 @@ function irParaResultado(resultado) {
 }
 
 /* ---------------------------------------------------------
-   FOOTER
+   INFORMAÇÕES DO ESTABELECIMENTO (overlay)
 --------------------------------------------------------- */
-function renderizarFooter(estabelecimento) {
-  const listaPagamentos = document.getElementById('lista-pagamentos');
-  estabelecimento.formasPagamento.forEach((forma) => {
-    const li = document.createElement('li');
-    li.className = 'footer__pagamento-item';
-    li.innerHTML = `${ICONES[forma.icone] || ''}<span>${escapeTexto(forma.nome)}</span>`;
-    listaPagamentos.appendChild(li);
-  });
+function preencherInformacoes(estabelecimento) {
+  document.getElementById('info-logo').src = estabelecimento.logo;
+  document.getElementById('info-logo').alt = `Logo de ${estabelecimento.nome}`;
+  document.getElementById('info-nome').textContent = estabelecimento.nome;
+  document.getElementById('info-tagline').textContent = estabelecimento.tagline || '';
 
-  document.getElementById('footer-endereco').textContent = estabelecimento.endereco;
-  document.getElementById('footer-horario').textContent = estabelecimento.horario || '';
+  document.getElementById('info-endereco').textContent = estabelecimento.endereco || '';
+  document.getElementById('info-horario').textContent = estabelecimento.horario || '';
 
   const { whatsapp, whatsappExibicao, telefone } = estabelecimento.contato;
-  const linkWhats = document.getElementById('footer-whatsapp');
+  const linkWhats = document.getElementById('info-whatsapp');
   linkWhats.textContent = `WhatsApp: ${whatsappExibicao || whatsapp}`;
   linkWhats.href = `https://wa.me/${whatsapp}`;
-  linkWhats.target = '_blank';
-  linkWhats.rel = 'noopener';
 
-  const linkTel = document.getElementById('footer-telefone');
+  const linkTel = document.getElementById('info-telefone');
   linkTel.textContent = `Telefone: ${telefone}`;
   linkTel.href = `tel:${telefone.replace(/\D/g, '')}`;
 
-  const containerRedes = document.getElementById('footer-redes');
+  const containerRedes = document.getElementById('info-redes');
   (estabelecimento.redesSociais || []).forEach((rede) => {
     const a = document.createElement('a');
-    a.className = 'footer__rede-link';
+    a.className = 'info-painel__rede-link';
     a.href = rede.url;
     a.target = '_blank';
     a.rel = 'noopener';
@@ -538,7 +550,43 @@ function renderizarFooter(estabelecimento) {
     containerRedes.appendChild(a);
   });
 
-  document.getElementById('footer-ano').textContent = new Date().getFullYear();
+  const listaPagamentos = document.getElementById('info-pagamentos');
+  estabelecimento.formasPagamento.forEach((forma) => {
+    const li = document.createElement('li');
+    li.className = 'info-painel__pagamento-item';
+    li.innerHTML = `${ICONES[forma.icone] || ''}<span>${escapeTexto(forma.nome)}</span>`;
+    listaPagamentos.appendChild(li);
+  });
+
+  const linkAvaliar = document.getElementById('info-link-avaliar');
+  if (estabelecimento.avaliacaoUrl) {
+    linkAvaliar.href = estabelecimento.avaliacaoUrl;
+    linkAvaliar.hidden = false;
+  }
+}
+
+function configurarInformacoes() {
+  const overlay = document.getElementById('info-overlay');
+
+  const abrir = () => {
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  };
+  const fechar = () => {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  };
+
+  document.getElementById('botao-informacoes-desktop').addEventListener('click', abrir);
+  document.getElementById('botao-informacoes-mobile').addEventListener('click', abrir);
+  document.getElementById('botao-fechar-info').addEventListener('click', fechar);
+
+  overlay.addEventListener('click', (evento) => {
+    if (evento.target === overlay) fechar();
+  });
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape' && !overlay.hidden) fechar();
+  });
 }
 
 /* ---------------------------------------------------------

@@ -11,7 +11,7 @@
  * peguem a versão nova.
  */
 
-const CACHE_VERSION = 'cardapio-v3';
+const CACHE_VERSION = 'cardapio-v4';
 
 const APP_SHELL = [
   './',
