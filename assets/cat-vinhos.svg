@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F1E3E0"/>
+      <stop offset="100%" stop-color="#141009"/>
+    </linearGradient>
+    <pattern id="grain" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="none"/>
+      <circle cx="1" cy="1" r="0.4" fill="#7A3B3B" opacity="0.10"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="450" fill="url(#g)"/>
+  <rect width="800" height="450" fill="url(#grain)"/>
+  <circle cx="400" cy="225" r="120" fill="none" stroke="#7A3B3B" stroke-width="1.5" opacity="0.35"/>
+  <text x="400" y="235" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#7A3B3B" text-anchor="middle" opacity="0.85" letter-spacing="4">VINHOS</text>
+</svg>
