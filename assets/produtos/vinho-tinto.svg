@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F1E3E0"/>
+      <stop offset="100%" stop-color="#F1E3E0dd"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#g)"/>
+  <circle cx="200" cy="185" r="108" fill="none" stroke="#7A3B3B" stroke-width="2" opacity="0.55"/>
+  <circle cx="200" cy="185" r="88" fill="none" stroke="#7A3B3B" stroke-width="1" opacity="0.35"/>
+  <text x="200" y="200" font-family="Georgia, 'Times New Roman', serif" font-size="46" fill="#7A3B3B" text-anchor="middle" opacity="0.9">TV</text>
+  <text x="200" y="330" font-family="'Courier New', monospace" font-size="15" letter-spacing="3" fill="#7A3B3B" text-anchor="middle" opacity="0.6">V01</text>
+</svg>
