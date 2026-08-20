@@ -8,7 +8,6 @@
  */
 
 const CONFIG_URL = 'config.json';
-const ROMANOS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
 const ICONES = {
   instagram: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>',
@@ -211,7 +210,7 @@ function aplicarRota(alvo) {
 function mostrarVista(nome) {
   document.getElementById('vista-inicio').hidden = nome !== 'inicio';
   document.getElementById('vista-cardapio').hidden = nome !== 'categorias';
-  document.querySelectorAll('.topbar__link, .bottom-nav__item[data-vista]').forEach((el) => {
+  document.querySelectorAll('.bottom-nav__item[data-vista]').forEach((el) => {
     el.classList.toggle('is-ativo', el.dataset.vista === nome);
   });
 }
@@ -223,13 +222,12 @@ function renderizarSidebar(categorias) {
   const sidebar = document.getElementById('sidebar-lista');
   const frag = document.createDocumentFragment();
 
-  categorias.forEach((categoria, indice) => {
-    const numero = ROMANOS[indice] || String(indice + 1).padStart(2, '0');
+  categorias.forEach((categoria) => {
     const item = document.createElement('button');
     item.type = 'button';
     item.className = 'item-sidebar';
     item.dataset.alvo = categoria.id;
-    item.innerHTML = `<span class="item-sidebar__numero">${numero}</span><span>${escapeTexto(categoria.nome)}</span>`;
+    item.innerHTML = `<span>${escapeTexto(categoria.nome)}</span><span class="item-sidebar__contagem">${categoria.produtos.length}</span>`;
     item.addEventListener('click', () => selecionarCategoria(categoria.id));
     frag.appendChild(item);
   });
@@ -244,15 +242,13 @@ function renderizarGradeCategorias(categorias) {
   const lista = document.getElementById('grade-categorias-lista');
   const frag = document.createDocumentFragment();
 
-  categorias.forEach((categoria, indice) => {
-    const numero = ROMANOS[indice] || String(indice + 1).padStart(2, '0');
+  categorias.forEach((categoria) => {
     const cartao = document.createElement('button');
     cartao.type = 'button';
     cartao.className = 'cartao-categoria';
     cartao.innerHTML = `
       <img class="cartao-categoria__imagem" src="${escapeAtributo(categoria.imagem)}" alt="" loading="lazy">
       <span class="cartao-categoria__corpo">
-        <span class="cartao-categoria__numero">CAPÍTULO ${numero}</span>
         <span class="cartao-categoria__nome">${escapeTexto(categoria.nome)}</span>
         <span class="cartao-categoria__contagem">${categoria.produtos.length} itens</span>
       </span>
@@ -272,26 +268,24 @@ function renderizarPaineis(categorias) {
   document.getElementById('estado-carregando')?.remove();
 
   const frag = document.createDocumentFragment();
-  categorias.forEach((categoria, indice) => frag.appendChild(construirPainelCategoria(categoria, indice)));
+  categorias.forEach((categoria) => frag.appendChild(construirPainelCategoria(categoria)));
   painel.appendChild(frag);
 }
 
-function construirPainelCategoria(categoria, indice) {
+function construirPainelCategoria(categoria) {
   const secao = document.createElement('section');
   secao.className = 'categoria-painel';
   secao.id = categoria.id;
   secao.hidden = true;
   secao.setAttribute('aria-labelledby', `titulo-${categoria.id}`);
 
-  const numero = ROMANOS[indice] || String(indice + 1).padStart(2, '0');
-
   secao.innerHTML = `
     <button type="button" class="categoria-painel__voltar">&larr; Categorias</button>
     <div class="categoria-painel__cabecalho">
       <img class="categoria-painel__imagem" src="${escapeAtributo(categoria.imagem)}" alt="" loading="lazy">
       <div>
-        <span class="categoria-painel__numero">CAPÍTULO ${numero}</span>
         <h2 class="categoria-painel__titulo" id="titulo-${categoria.id}">${escapeTexto(categoria.nome)}</h2>
+        <span class="categoria-painel__contagem">${categoria.produtos.length} itens</span>
         ${categoria.descricao ? `<p class="categoria-painel__descricao">${escapeTexto(categoria.descricao)}</p>` : ''}
       </div>
     </div>
@@ -421,7 +415,6 @@ function configurarBusca() {
   const estadoInicialHTML = painelResultados.innerHTML;
 
   document.getElementById('botao-abrir-busca').addEventListener('click', abrirBusca);
-  document.getElementById('botao-abrir-busca-mobile').addEventListener('click', abrirBusca);
   document.getElementById('botao-fechar-busca').addEventListener('click', fecharBusca);
 
   overlay.addEventListener('click', (evento) => {
@@ -577,8 +570,7 @@ function configurarInformacoes() {
     document.body.style.overflow = '';
   };
 
-  document.getElementById('botao-informacoes-desktop').addEventListener('click', abrir);
-  document.getElementById('botao-informacoes-mobile').addEventListener('click', abrir);
+  document.getElementById('botao-informacoes').addEventListener('click', abrir);
   document.getElementById('botao-fechar-info').addEventListener('click', fechar);
 
   overlay.addEventListener('click', (evento) => {

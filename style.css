@@ -75,9 +75,6 @@ button { font: inherit; }
 .app { display: flex; flex-direction: column; min-height: 100vh; }
 #conteudo { flex: 1; display: flex; flex-direction: column; }
 
-/* Ações visíveis só no desktop (a bottom nav já cobre isso no mobile) */
-.acao-desktop { display: none; }
-
 /* ============================================================
    BOTÕES UTILITÁRIOS
    ============================================================ */
@@ -148,18 +145,6 @@ button { font: inherit; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .topbar__tagline { font-size: 0.68rem; color: var(--slate-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-.topbar__nav-desktop { display: none; gap: 0.25rem; }
-.topbar__link {
-  border: none; background: none; cursor: pointer;
-  padding: 0.5rem 0.9rem; border-radius: 999px;
-  font-size: 0.85rem; font-weight: 600; color: var(--navy-suave);
-  transition: background var(--transicao), color var(--transicao);
-}
-.topbar__link:hover { background: var(--papel-fundo-suave); color: var(--navy); }
-.topbar__link.is-ativo { background: var(--navy); color: var(--papel-alto); }
-
-.topbar__acoes { display: flex; align-items: center; gap: 0.6rem; flex: 0 0 auto; }
 
 /* ============================================================
    VISTA: INÍCIO — tela única, sem rolagem
@@ -280,8 +265,9 @@ button { font: inherit; }
 }
 .item-sidebar:hover { background: var(--papel-fundo-suave); color: var(--navy); }
 .item-sidebar.is-ativo { background: var(--acento-suave); border-left-color: var(--acento); color: var(--acento-forte); font-weight: 700; }
-.item-sidebar__numero { font-family: var(--fonte-mono); font-size: 0.68rem; color: var(--slate-muted); flex: 0 0 auto; }
-.item-sidebar.is-ativo .item-sidebar__numero { color: var(--acento); }
+.item-sidebar { justify-content: space-between; }
+.item-sidebar__contagem { font-family: var(--fonte-mono); font-size: 0.68rem; color: var(--slate-muted); flex: 0 0 auto; }
+.item-sidebar.is-ativo .item-sidebar__contagem { color: var(--acento); }
 
 .painel { flex: 1; min-width: 0; padding: var(--espaco-lg) var(--espaco-md) var(--espaco-xl); }
 
@@ -315,8 +301,7 @@ button { font: inherit; }
 .cartao-categoria:hover { transform: translateY(-2px); box-shadow: 0 10px 22px var(--sombra); border-color: var(--linha-forte); }
 .cartao-categoria__imagem { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
 .cartao-categoria__corpo { padding: 0.75rem 0.9rem 0.95rem; }
-.cartao-categoria__numero { font-family: var(--fonte-mono); font-size: 0.62rem; color: var(--acento); letter-spacing: 0.08em; }
-.cartao-categoria__nome { font-family: var(--fonte-display); font-weight: 600; font-size: 1rem; color: var(--navy); margin-top: 0.15rem; }
+.cartao-categoria__nome { font-family: var(--fonte-display); font-weight: 600; font-size: 1rem; color: var(--navy); }
 .cartao-categoria__contagem { font-size: 0.72rem; color: var(--slate-muted); margin-top: 0.2rem; }
 
 /* ---------- Painel de categoria ativa ---------- */
@@ -338,8 +323,8 @@ button { font: inherit; }
   border-bottom: 1px solid var(--linha);
 }
 .categoria-painel__imagem { width: 4.5rem; height: 4.5rem; border-radius: var(--raio); object-fit: cover; flex: 0 0 auto; border: 1px solid var(--linha); }
-.categoria-painel__numero { display: block; font-family: var(--fonte-mono); font-size: 0.68rem; letter-spacing: 0.1em; color: var(--acento); margin-bottom: 0.2rem; }
 .categoria-painel__titulo { font-family: var(--fonte-display); font-size: clamp(1.35rem, 4vw, 1.75rem); font-weight: 600; color: var(--navy); }
+.categoria-painel__contagem { display: block; font-size: 0.72rem; color: var(--slate-muted); margin-top: 0.15rem; }
 .categoria-painel__descricao { margin-top: 0.3rem; font-size: 0.85rem; color: var(--navy-suave); }
 
 /* ---------- Lista de produtos (com miniatura + código) ---------- */
@@ -531,11 +516,7 @@ button { font: inherit; }
    RESPONSIVO
    ============================================================ */
 @media (min-width: 860px) {
-  .bottom-nav { display: none; }
-  .topbar__nav-desktop { display: flex; }
-  .acao-desktop { display: inline-flex; }
   .sidebar { display: block; }
-  .corpo { padding-bottom: 0; }
 
   .vista-inicio { min-height: calc(100vh - var(--altura-topbar)); max-width: 34rem; }
   .grade-categorias__lista { grid-template-columns: repeat(3, 1fr); max-width: none; }

@@ -109,6 +109,30 @@
             "cafeina",
             "vegano"
           ]
+        },
+        {
+          "codigo": "C06",
+          "nome": "Cortado",
+          "descricao": "Espresso equilibrado com um véu de leite vaporizado",
+          "valor": 12.0,
+          "imagem": "assets/produtos/cortado.svg",
+          "tags": [
+            "cafeina",
+            "vegetariano"
+          ]
+        },
+        {
+          "codigo": "C07",
+          "nome": "Affogato",
+          "descricao": "Bola de sorvete de creme afogada em espresso quente",
+          "detalhes": "Sobremesa e café num só copo: sorvete de creme artesanal coberto por uma dose de espresso puro na hora de servir.",
+          "valor": 17.0,
+          "imagem": "assets/produtos/affogato.svg",
+          "tags": [
+            "cafeina",
+            "vegetariano",
+            "doce"
+          ]
         }
       ]
     },
@@ -160,6 +184,27 @@
           "tags": [
             "vegetariano",
             "doce"
+          ]
+        },
+        {
+          "codigo": "P05",
+          "nome": "Pão de Queijo Trufado",
+          "descricao": "Receita mineira com um toque de azeite trufado",
+          "valor": 9.5,
+          "imagem": "assets/produtos/pao-de-queijo.svg",
+          "tags": [
+            "vegetariano",
+            "semGluten"
+          ]
+        },
+        {
+          "codigo": "P06",
+          "nome": "Torrada de Abacate",
+          "descricao": "Pão de fermentação natural, abacate amassado, limão e flor de sal",
+          "valor": 19.0,
+          "imagem": "assets/produtos/torrada-abacate.svg",
+          "tags": [
+            "vegano"
           ]
         }
       ]
@@ -225,6 +270,26 @@
             "vegetariano",
             "semGluten"
           ]
+        },
+        {
+          "codigo": "R06",
+          "nome": "Wrap de Frango",
+          "descricao": "Frango grelhado, folhas verdes e molho de iogurte na tortilha integral",
+          "valor": 28.0,
+          "imagem": "assets/produtos/wrap-frango.svg",
+          "tags": [
+            "salgado"
+          ]
+        },
+        {
+          "codigo": "R07",
+          "nome": "Bowl Mediterrâneo",
+          "descricao": "Homus, falafel, tomate seco, pepino e molho tahine",
+          "valor": 31.0,
+          "imagem": "assets/produtos/bowl-mediterraneo.svg",
+          "tags": [
+            "vegano"
+          ]
         }
       ]
     },
@@ -280,6 +345,192 @@
             "doce"
           ],
           "pratoDoDia": true
+        },
+        {
+          "codigo": "D05",
+          "nome": "Cookie Recheado",
+          "descricao": "Massa amanteigada com gotas de chocolate meio amargo",
+          "valor": 11.0,
+          "imagem": "assets/produtos/cookie.svg",
+          "tags": [
+            "vegetariano",
+            "doce"
+          ]
+        },
+        {
+          "codigo": "D06",
+          "nome": "Petit Gâteau",
+          "descricao": "Bolinho de chocolate quente com recheio cremoso e sorvete de creme",
+          "detalhes": "Servido na hora, direto do forno — o recheio cremoso escorre ao cortar. Acompanha bola de sorvete de creme artesanal.",
+          "valor": 23.0,
+          "imagem": "assets/produtos/petit-gateau.svg",
+          "tags": [
+            "vegetariano",
+            "doce"
+          ],
+          "maisPedido": true
+        }
+      ]
+    },
+    {
+      "id": "sucos-bebidas-geladas",
+      "nome": "Sucos & Bebidas Geladas",
+      "descricao": "Refrescos naturais e opções sem cafeína",
+      "imagem": "assets/cat-sucos.svg",
+      "produtos": [
+        {
+          "codigo": "B01",
+          "nome": "Suco de Laranja Natural",
+          "descricao": "Laranjas espremidas na hora, sem adição de açúcar",
+          "valor": 12.0,
+          "imagem": "assets/produtos/suco-laranja.svg",
+          "tags": [
+            "vegano"
+          ]
+        },
+        {
+          "codigo": "B02",
+          "nome": "Limonada Rosa",
+          "descricao": "Limão siciliano, xarope de frutas vermelhas e água com gás",
+          "valor": 14.0,
+          "imagem": "assets/produtos/limonada-rosa.svg",
+          "tags": [
+            "vegano"
+          ],
+          "maisPedido": true
+        },
+        {
+          "codigo": "B03",
+          "nome": "Chá Gelado de Hibisco",
+          "descricao": "Infusão de hibisco e frutas vermelhas, servido no gelo",
+          "valor": 13.0,
+          "imagem": "assets/produtos/cha-hibisco.svg",
+          "tags": [
+            "vegano"
+          ]
+        },
+        {
+          "codigo": "B04",
+          "nome": "Refrigerante Artesanal de Gengibre",
+          "descricao": "Fermentação própria, notas picantes e levemente adocicadas",
+          "valor": 11.0,
+          "imagem": "assets/produtos/refri-gengibre.svg",
+          "tags": [
+            "vegano",
+            "apimentado"
+          ]
+        },
+        {
+          "codigo": "B05",
+          "nome": "Água com Gás e Limão",
+          "descricao": "Servida bem gelada, com rodelas de limão siciliano",
+          "valor": 7.0,
+          "imagem": "assets/produtos/agua-gas.svg",
+          "tags": [
+            "vegano"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "massas-risotos",
+      "nome": "Massas & Risotos",
+      "descricao": "Pratos quentes para almoço ou jantar",
+      "imagem": "assets/cat-massas.svg",
+      "produtos": [
+        {
+          "codigo": "M01",
+          "nome": "Risoto de Cogumelos",
+          "descricao": "Arbóreo cremoso, mix de cogumelos frescos e parmesão",
+          "detalhes": "Arroz arbóreo cozido lentamente com caldo de legumes, finalizado com manteiga e lascas de parmesão.",
+          "valor": 42.0,
+          "imagem": "assets/produtos/risoto-cogumelos.svg",
+          "tags": [
+            "vegetariano",
+            "semGluten"
+          ],
+          "pratoDoDia": true
+        },
+        {
+          "codigo": "M02",
+          "nome": "Nhoque ao Sugo",
+          "descricao": "Nhoque de batata artesanal, molho de tomate fresco e manjericão",
+          "valor": 36.0,
+          "imagem": "assets/produtos/nhoque.svg",
+          "tags": [
+            "vegetariano"
+          ]
+        },
+        {
+          "codigo": "M03",
+          "nome": "Talharim ao Alho e Óleo",
+          "descricao": "Massa fresca, alho dourado, azeite extravirgem e pimenta calabresa",
+          "valor": 34.0,
+          "imagem": "assets/produtos/talharim.svg",
+          "tags": [
+            "vegano",
+            "apimentado"
+          ]
+        },
+        {
+          "codigo": "M04",
+          "nome": "Lasanha de Berinjela",
+          "descricao": "Camadas de berinjela grelhada, molho branco e queijo gratinado",
+          "valor": 39.0,
+          "imagem": "assets/produtos/lasanha.svg",
+          "tags": [
+            "vegetariano",
+            "semGluten"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vinhos-drinks",
+      "nome": "Vinhos & Drinks",
+      "descricao": "Seleção para acompanhar o fim de tarde",
+      "imagem": "assets/cat-vinhos.svg",
+      "produtos": [
+        {
+          "codigo": "V01",
+          "nome": "Taça de Vinho Tinto",
+          "descricao": "Rótulo nacional, corpo médio, notas de frutas vermelhas",
+          "valor": 28.0,
+          "imagem": "assets/produtos/vinho-tinto.svg",
+          "tags": [
+            "vegano"
+          ]
+        },
+        {
+          "codigo": "V02",
+          "nome": "Taça de Vinho Branco",
+          "descricao": "Rótulo nacional, fresco e aromático, servido bem gelado",
+          "valor": 28.0,
+          "imagem": "assets/produtos/vinho-branco.svg",
+          "tags": [
+            "vegano"
+          ]
+        },
+        {
+          "codigo": "V03",
+          "nome": "Spritz Nômade",
+          "descricao": "Aperitivo italiano, laranja e prosecco, servido com gelo",
+          "valor": 26.0,
+          "imagem": "assets/produtos/spritz.svg",
+          "tags": [
+            "vegano"
+          ],
+          "maisPedido": true
+        },
+        {
+          "codigo": "V04",
+          "nome": "Chope Artesanal",
+          "descricao": "Cerveja de produção local, estilo pilsen leve",
+          "valor": 16.0,
+          "imagem": "assets/produtos/chope.svg",
+          "tags": [
+            "vegano"
+          ]
         }
       ]
     }

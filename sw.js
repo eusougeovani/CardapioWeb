@@ -11,7 +11,7 @@
  * peguem a versão nova.
  */
 
-const CACHE_VERSION = 'cardapio-v4';
+const CACHE_VERSION = 'cardapio-v5';
 
 const APP_SHELL = [
   './',
@@ -25,6 +25,9 @@ const APP_SHELL = [
   './assets/cat-panificacao.svg',
   './assets/cat-pratos.svg',
   './assets/cat-doces.svg',
+  './assets/cat-sucos.svg',
+  './assets/cat-massas.svg',
+  './assets/cat-vinhos.svg',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
   './assets/produtos/espresso-duplo.svg',
@@ -32,19 +35,40 @@ const APP_SHELL = [
   './assets/produtos/cappuccino.svg',
   './assets/produtos/flat-white.svg',
   './assets/produtos/nitro.svg',
+  './assets/produtos/cortado.svg',
+  './assets/produtos/affogato.svg',
   './assets/produtos/croissant.svg',
   './assets/produtos/pao-fermentacao.svg',
   './assets/produtos/focaccia.svg',
   './assets/produtos/scone.svg',
+  './assets/produtos/pao-de-queijo.svg',
+  './assets/produtos/torrada-abacate.svg',
   './assets/produtos/ovos-beneditinos.svg',
   './assets/produtos/tabua-frios.svg',
   './assets/produtos/pastrami.svg',
   './assets/produtos/salada-graos.svg',
   './assets/produtos/omelete.svg',
+  './assets/produtos/wrap-frango.svg',
+  './assets/produtos/bowl-mediterraneo.svg',
   './assets/produtos/bolo-cenoura.svg',
   './assets/produtos/cheesecake.svg',
   './assets/produtos/brownie.svg',
-  './assets/produtos/torta-limao.svg'
+  './assets/produtos/torta-limao.svg',
+  './assets/produtos/cookie.svg',
+  './assets/produtos/petit-gateau.svg',
+  './assets/produtos/suco-laranja.svg',
+  './assets/produtos/limonada-rosa.svg',
+  './assets/produtos/cha-hibisco.svg',
+  './assets/produtos/refri-gengibre.svg',
+  './assets/produtos/agua-gas.svg',
+  './assets/produtos/risoto-cogumelos.svg',
+  './assets/produtos/nhoque.svg',
+  './assets/produtos/talharim.svg',
+  './assets/produtos/lasanha.svg',
+  './assets/produtos/vinho-tinto.svg',
+  './assets/produtos/vinho-branco.svg',
+  './assets/produtos/spritz.svg',
+  './assets/produtos/chope.svg'
 ];
 
 // Instalação: pré-armazena o app shell

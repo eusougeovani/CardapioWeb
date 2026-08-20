@@ -2,6 +2,8 @@
 
 Cardápio gastronômico interativo, mobile-first, alimentado 100% por `config.json` (sem conteúdo hardcoded no HTML). Início é uma tela única, sem rolagem — no estilo de apps de delivery.
 
+O catálogo de exemplo já vem com **7 categorias e 39 produtos** (Cafés Especiais, Panificação Artesanal, Pratos Salgados, Doces & Sobremesas, Sucos & Bebidas Geladas, Massas & Risotos, Vinhos & Drinks), prontos para você editar/trocar pelos itens reais do estabelecimento.
+
 ## Estrutura de pastas
 
 ```
@@ -35,9 +37,9 @@ Duas "vistas" principais controladas por `script.js`, sem recarregar a página:
 - **Início** (`#inicio`): tela única — logo, nome, tagline, botão "Ver cardápio" e os carrosséis de destaque ("Pratos do dia" e "Mais pedidos"). Cabe inteira na tela, sem precisar rolar.
 - **Categorias** (`#categorias` ou `#<id-da-categoria>`): grade de categorias (visão geral) ou, ao selecionar uma, o painel daquela categoria com a lista de produtos. Cada categoria tem URL própria (ex: `#cafes-especiais`), então dá pra compartilhar o link direto.
 
-Navegação em dois formatos:
-- **Mobile**: bottom nav fixa com 4 ações — Início / Categorias / Buscar / Informações.
-- **Desktop**: topbar com links (Início/Categorias) + ícone de busca + botão Informações, e sidebar fixa listando as categorias.
+Navegação em uma única barra, igual em qualquer tamanho de tela — sem duplicar botões entre topbar e navbar:
+- **Topbar**: só a identidade do estabelecimento (logo, nome, tagline). Clicar nela leva à Início.
+- **Navbar** (fixa embaixo, em mobile e desktop): Início / Categorias / Buscar / Informações. No desktop, a sidebar de categorias fica sempre visível como atalho adicional.
 
 ## Destaques da Início: Pratos do dia & Mais pedidos
 
@@ -52,7 +54,7 @@ Um produto pode ter as duas flags, nenhuma, ou só uma. Se nenhum produto tiver 
 
 ## Busca
 
-O ícone de lupa (topbar no desktop, bottom nav no mobile) abre uma área dedicada de busca — em branco até o cliente digitar. Filtra por **nome, código e descrição** (ignorando acentuação) em tempo real. Ao clicar num resultado, o app troca para a categoria correta, rola até o produto e o destaca por alguns segundos.
+O ícone de lupa na navbar abre uma área dedicada de busca — em branco até o cliente digitar. Filtra por **nome, código e descrição** (ignorando acentuação) em tempo real. Ao clicar num resultado, o app troca para a categoria correta, rola até o produto e o destaca por alguns segundos.
 
 ## Modal de produto
 
@@ -60,7 +62,7 @@ Clicar em qualquer item (na lista, no carrossel ou na busca) abre uma janela flu
 
 ## Informações do estabelecimento
 
-O botão "Informações" (topbar no desktop, bottom nav no mobile) abre uma aba com tudo que antes ficava num rodapé fixo: endereço, horário, contato, redes sociais, formas de pagamento — e um botão "Avaliar estabelecimento" que leva ao link definido em `avaliacaoUrl`.
+O botão "Informações" na navbar abre uma aba com tudo que antes ficava num rodapé fixo: endereço, horário, contato, redes sociais, formas de pagamento — e um botão "Avaliar estabelecimento" que leva ao link definido em `avaliacaoUrl`.
 
 ## Como manter o cardápio (sem tocar em código)
 
